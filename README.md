@@ -30,7 +30,7 @@ Hinges and stepper motors
 
 ~~2. that it can actually snap to angles, and make the joint actively hold a position -- i.e. the joint compensates when you place a heavier object and does not move down.~~
 
-Removed.  This for will not be supporting these parts
+Removed.  This fork will not be supporting these parts
 
 Binding keys and analog gamepad controls in the VAB
 ---------------------------------------------------
