@@ -24,22 +24,26 @@ The nice thing about it is that it hides some of the axes depending on your posi
 Hinges and stepper motors
 -------------------------
 
-`KRSHinge` is a part module that can turn anything into a stepper motor I did on my own for kicks and giggles. The difference of this in regards to competing implementations is that
+~~`KRSHinge` is a part module that can turn anything into a stepper motor I did on my own for kicks and giggles. The difference of this in regards to competing implementations is that
 
 1. it is not bound to draconian licensing and
 
-2. that it can actually snap to angles, and make the joint actively hold a position -- i.e. the joint compensates when you place a heavier object and does not move down.
+2. that it can actually snap to angles, and make the joint actively hold a position -- i.e. the joint compensates when you place a heavier object and does not move down.~~
+
+Removed.  This for will not be supporting these parts
 
 Binding keys and analog gamepad controls in the VAB
 ---------------------------------------------------
 
-Both `KRSControl` and `KRSInputAttribute` enable using a graphical interface to bind keys and gamepad controls (including analog ones) to my part modules.
+~~Both `KRSControl` and `KRSInputAttribute` enable using a graphical interface to bind keys and gamepad controls (including analog ones) to my part modules.
 
 For now this only works with `KRSHinge` but I don't see why it couldn't be made work with other things.
 
 When I developed this I wanted to make it less intrusive, i.e. not needing to modify your part module to make it compatible with this, but I haven't put much thought on this since so it's the way it is.
 
-**NOTE**: There is some bug in this that borks the placement of struts, so be warned.
+**NOTE**: There is some bug in this that borks the placement of struts, so be warned.~~
+
+Removed.
 
 Shader material properties parser
 ---------------------------------
@@ -68,3 +72,13 @@ and here's how it looks with coloring and perspective projection:
 That's it!
 
 -- Kronal
+
+
+==========================================
+
+### Bigorangemachine's Fork
+
+#### v0.0.0
+
+* Made 'Stable' (Windows confirmed)
+* Writes to screenshot folder (Windows confirmed)
