@@ -236,10 +236,22 @@ namespace KronalUtils
             RenderTexture.active = this.rt;
             screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
             screenShot.Apply();
-            RenderTexture.active = saveRt; 
+            RenderTexture.active = saveRt;
             byte[] bytes = screenShot.EncodeToPNG();
-            string filename = Path.Combine(Application.dataPath, "Screenshots" + Path.PathSeparator + prefix + "_screenshot.png");
+            //Debug.Log(string.Format("TEST: {0} or {1}", Path.GetFullPath(Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar), System.IO.Directory.GetParent(Application.dataPath).ToString()));
+            //string filename = Path.Combine(Application.dataPath, "Screenshots" + Path.PathSeparator + prefix + "_screenshot.png");
+            uint file_inc = 0;
+            //uint breakCount = 0;
+            string filename = "";
+            do{
+                //breakCount = breakCount + 1;
+                //if (breakCount > 10) { break; }
+                ++file_inc;
+                filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
+                //Debug.Log(string.Format("FILENAME: {0} FILE EXISTS: {1} NUM: {2}", filename, (File.Exists(filename) ? "YES" : "NO"), file_inc.ToString()));
+            }while(File.Exists(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
+            
             Debug.Log(string.Format("Took screenshot to: {0}", filename));
         }
 

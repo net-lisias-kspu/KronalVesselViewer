@@ -49,7 +49,7 @@ namespace KronalUtils
 
         private void ConfigReverted()
         {
-            EditorLogic.fetch.Unlock();
+            EditorLogic.fetch.Unlock(GetInstanceID().ToString());
         }
 
         public void Update()
