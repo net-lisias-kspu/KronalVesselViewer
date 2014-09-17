@@ -1,8 +1,21 @@
 Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-exploded-ship-view)
 
 
-#### Kronal Utils for KSP
+==========================================
+
+### Bigorangemachine's Fork
+
+#### v0.0.0
+
+* Made 'Stable' with Stock KSP v0.24.2
+* Writes to screenshot folder (Windows/OSX confirmed)
+
+
 ====================
+
+
+#### Kronal Utils for KSP
+------------------
 
 As I haven't been able to continue developing my KSP related stuff,
 I'm now releasing it into the public domain using the Unlicense --
@@ -77,11 +90,6 @@ That's it!
 -- Kronal
 
 
-==========================================
+#### v0.0.0a
 
-### Bigorangemachine's Fork
-
-#### v0.0.0
-
-* Made 'Stable' with Stock KSP
-* Writes to screenshot folder (Windows/OSX confirmed)
+* Made 'Stable' with Stock KSP v0.23.0
