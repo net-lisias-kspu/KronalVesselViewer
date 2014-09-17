@@ -9,30 +9,35 @@ namespace KronalUtils
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
     class KRSVesselShotUI : MonoBehaviour
     {
-        private KRSVesselShot control;
+        private KRSVesselShot control = new KRSVesselShot();
         private Rect windowSize;
         private Vector2 windowScrollPos;
         private int tabCurrent;
         private string[] tabNames;
         private Action[] tabGUI;
+        private int shaderTabCurrent;
+        private string[] shaderTabsNames;
         private Rect orthoViewRect;
         private GUIStyle guiStyleButtonAlert;
+        private ApplicationLauncherButton KVVButton;
+        private bool visible;
+        private KRSEditorAxis axis;
 
         private bool IsOnEditor()
         {
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
         }
 
-        public void Start()
+        public void Awake()
         {
-            this.control = new KRSVesselShot();
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
+            this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.tabNames = new string[] { "View", "Config" };
             this.tabGUI = new Action[] { GUITabView, GUITabConfig };
             this.control.Config.onApply += ConfigApplied;
             this.control.Config.onRevert += ConfigReverted;
-            
-            EditorLogic.fetch.editorCamera.gameObject.AddComponent<KRSEditorAxis>();
+
+            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
         }
 
         private void ConfigApplied()
@@ -56,14 +61,32 @@ namespace KronalUtils
         {
             if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f)
             {
-                this.control.Update(false, (int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
+                this.control.Update((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
         }
 
         public void OnGUI()
         {
-            if (!IsOnEditor()) return;
+            if (visible) 
+            {
+                this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
+            }
+            
+            EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);
+        }
 
+        private void GUIWindow(int id)
+        {
+            GUILayout.BeginVertical("box");
+            GUIButtons();
+            GUITabShader(this.shaderTabsNames[this.shaderTabCurrent]);
+            this.tabGUI[this.tabCurrent]();
+            GUILayout.EndVertical();
+            GUI.DragWindow();
+        }
+
+        private void GUIButtons()
+        {
             if (this.guiStyleButtonAlert == null)
             {
                 this.guiStyleButtonAlert = new GUIStyle(GUI.skin.button);
@@ -75,27 +98,10 @@ namespace KronalUtils
                 this.guiStyleButtonAlert.stretchWidth = false;
                 this.guiStyleButtonAlert.alignment = TextAnchor.MiddleCenter;
             }
-
-            this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
-            EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);
-        }
-
-        private void GUIWindow(int id)
-        {
-            GUILayout.BeginVertical("box");
-            GUIButtons();
-            this.tabGUI[this.tabCurrent]();
-            GUILayout.EndVertical();
-            GUI.DragWindow();
-        }
-
-        private void GUIButtons()
-        {
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Explode"))
             {
-                this.control.UpdateShipBounds();
-                this.control.Config.Execute(this.control.Ship);
+                this.control.Explode();
             }
 
             if (GUILayout.Button("Revert"))
@@ -161,11 +167,26 @@ namespace KronalUtils
             this.control.EffectsAntiAliasing = GUILayout.Toggle(this.control.EffectsAntiAliasing, "AA");
             GUILayout.EndHorizontal();
 
-            for (var i = 0; i < this.control.MaterialBluePrint.PropertyCount; ++i)
+            GUILayout.BeginHorizontal();
+            this.shaderTabCurrent = GUILayout.Toolbar(this.shaderTabCurrent, this.shaderTabsNames);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            this.tabCurrent = GUILayout.Toolbar(this.tabCurrent, this.tabNames);
+            GUILayout.EndHorizontal();
+        }
+
+        private void GUITabShader(string name)
+        {
+            GUILayout.BeginHorizontal();
+            this.control.Effects[name].Enabled = GUILayout.Toggle(this.control.Effects[name].Enabled, "Active");
+            GUILayout.EndHorizontal();
+            for (var i = 0; i < this.control.Effects[name].PropertyCount; ++i)
             {
-                var prop = this.control.MaterialBluePrint[i];
+                var prop = this.control.Effects[name][i];
                 prop.Match(
-                    IfFloat: (p) => {
+                    IfFloat: (p) =>
+                    {
                         GUILayout.BeginHorizontal();
                         GUILayout.Label(p.DisplayName, GUILayout.Width(60f));
                         p.Value = GUILayout.HorizontalSlider(p.Value, p.RangeMin, p.RangeMax);
@@ -174,7 +195,8 @@ namespace KronalUtils
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2f);
                     },
-                    IfColor: (p) => {
+                    IfColor: (p) =>
+                    {
                         GUILayout.BeginHorizontal();
                         GUILayout.Label(p.DisplayName, GUILayout.Width(60f));
                         GUILayout.BeginVertical();
@@ -194,7 +216,8 @@ namespace KronalUtils
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2f);
                     },
-                    IfVector: (p) => {
+                    IfVector: (p) =>
+                    {
                         GUILayout.BeginHorizontal();
                         GUILayout.Label(p.DisplayName, GUILayout.Width(60f));
                         GUILayout.BeginVertical();
@@ -214,12 +237,8 @@ namespace KronalUtils
                         if (GUILayout.Button("RESET", this.guiStyleButtonAlert)) p.Value = p.DefaultValue;
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2f);
-                    });               
+                    });
             }
-
-            GUILayout.BeginHorizontal();
-            this.tabCurrent = GUILayout.Toolbar(this.tabCurrent, this.tabNames);
-            GUILayout.EndHorizontal();
         }
 
         private void GUITabView()
@@ -270,6 +289,48 @@ namespace KronalUtils
                 GUILayout.Space(5);
             }
             GUILayout.EndScrollView();
+        }
+
+        void OnGUIAppLauncherReady()
+        {
+            if (ApplicationLauncher.Ready)
+            {
+                KVVButton = ApplicationLauncher.Instance.AddModApplication(
+                    onAppLaunchToggleOn,
+                    onAppLaunchToggleOff,
+                    DummyVoid,
+                    DummyVoid,
+                    DummyVoid,
+                    DummyVoid,
+                    ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB,
+                    (Texture)GameDatabase.Instance.GetTexture("KronalUtils/Textures/icon_button", false));
+
+            }
+        }
+
+        void onAppLaunchToggleOn()
+        {
+            this.axis = EditorLogic.fetch.editorCamera.gameObject.AddComponent<KRSEditorAxis>();
+            this.control.UpdateShipBounds();
+            visible = true;
+        }
+
+        void onAppLaunchToggleOff()
+        {
+            EditorLogic.DestroyObject(this.axis);
+            visible = false;
+        }
+
+        void DummyVoid() { }
+
+        void OnDestroy()
+        {
+            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            if (this.axis != null)
+                EditorLogic.DestroyObject(this.axis);
+
+            if (KVVButton != null)
+                ApplicationLauncher.Instance.RemoveModApplication(KVVButton);
         }
     }
 }

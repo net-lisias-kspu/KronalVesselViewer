@@ -15,7 +15,9 @@ namespace KronalUtils
         public ShaderMaterial MaterialBluePrint = new ShaderMaterial(KSP.IO.File.ReadAllText<KRSVesselShot>("blueprint"));
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
-        public readonly List<ShaderMaterial> Effects;
+        public readonly IDictionary<string, ShaderMaterial> Effects;
+        private static readonly string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()) + " ");
+        private static readonly string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
         private Camera[] cameras;
         private RenderTexture rt;
@@ -53,17 +55,33 @@ namespace KronalUtils
             }
         }
 
+        internal string ShipName
+        {
+            get
+            {
+                if (EditorLogic.fetch && EditorLogic.fetch.ship != null)
+                {
+                    
+                    return System.Text.RegularExpressions.Regex.Replace(EditorLogic.fetch.ship.shipName, invalidRegStr, "_").Trim();
+                }
+                else
+                {
+                    return "vessel";
+                }
+            }
+        }
+
         public KRSVesselShot()
         {
             SetupCameras();
             this.Config = new VesselViewConfig();
             this.direction = Vector3.forward;
             this.Materials = new Dictionary<string, Material>();
-            this.Effects = new List<ShaderMaterial>() {
-                MaterialColorAdjust,
-                MaterialEdgeDetect,
-                //MaterialBluePrint,
-                //MaterialFXAA
+            this.Effects = new Dictionary<string, ShaderMaterial>() {
+                {"Color Adjust",MaterialColorAdjust},
+                {"Edge Detect", MaterialEdgeDetect},
+                {"Blue Print", MaterialBluePrint},
+                {"FXAA", MaterialFXAA}
             };
             LoadShaders();
             UpdateShipBounds();
@@ -222,14 +240,14 @@ namespace KronalUtils
             //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
             foreach (var fx in Effects)
             {
-                if (fx.Enabled)
+                if (fx.Value.Enabled)
                 {
-                    Graphics.Blit(this.rt, this.rt, fx.Material);
+                    Graphics.Blit(this.rt, this.rt, fx.Value.Material);
                 }
             }
         }
 
-        private void SaveTexture(String prefix)
+        private void SaveTexture(String fileName)
         {
             Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
             var saveRt = RenderTexture.active;
@@ -247,7 +265,7 @@ namespace KronalUtils
                 //breakCount = breakCount + 1;
                 //if (breakCount > 10) { break; }
                 ++file_inc;
-                filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
+                filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + fileName + file_inc.ToString() + ".png");
                 //Debug.Log(string.Format("FILENAME: {0} FILE EXISTS: {1} NUM: {2}", filename, (File.Exists(filename) ? "YES" : "NO"), file_inc.ToString()));
             }while(File.Exists(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
@@ -256,37 +274,35 @@ namespace KronalUtils
         }
 
         public void Execute() {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!EditorLogic.startPod || this.Ship == null)
             {
                 return;
             }
 
-            SaveTexture("front");
+            SaveTexture("front" + "_" + ShipName + "_");
         }
 
-        public void Update(bool explode = false, int width = -1, int height = -1)
+        public void Explode()
         {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!EditorLogic.startPod || this.Ship == null)
+            {
+                return;
+            }
+            this.Config.Execute(this.Ship);
+            UpdateShipBounds();
+
+        }
+
+        public void Update(int width = -1, int height = -1)
+        {
+            if (!EditorLogic.startPod || this.Ship == null)
             {
                 return;
             }
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
-            if (explode)
-            {
-                this.Config.Execute(this.Ship);
-            }
-            try
-            {
-                GenTexture(dir, width, height);
-            }
-            finally
-            {
-                if (explode)
-                {
-                    this.Config.Revert();
-                }
-            }
+            GenTexture(dir, width, height);
+            
         }
 
         internal Texture Texture()
