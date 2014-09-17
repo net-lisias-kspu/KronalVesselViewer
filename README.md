@@ -80,5 +80,5 @@ That's it!
 
 #### v0.0.0
 
-* Made 'Stable' (Windows confirmed)
-* Writes to screenshot folder (Windows confirmed)
+* Made 'Stable' with Stock KSP
+* Writes to screenshot folder (Windows/OSX confirmed)
