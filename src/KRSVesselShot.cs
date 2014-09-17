@@ -16,7 +16,7 @@ namespace KronalUtils
         public ShaderMaterial MaterialBluePrint = new ShaderMaterial(KSP.IO.File.ReadAllText<KRSVesselShot>("blueprint"));
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
-        public readonly List<ShaderMaterial> Effects;
+        public readonly IDictionary<string, ShaderMaterial> Effects;
 
         private Camera[] cameras;
         private RenderTexture rt;
@@ -54,17 +54,33 @@ namespace KronalUtils
             }
         }
 
+        internal string ShipName
+        {
+            get
+            {
+                if (EditorLogic.fetch && EditorLogic.fetch.ship != null)
+                {
+                    
+                    return MakeValidFileName(EditorLogic.fetch.ship.shipName);
+                }
+                else
+                {
+                    return "vessel";
+                }
+            }
+        }
+
         public KRSVesselShot()
         {
             SetupCameras();
             this.Config = new VesselViewConfig();
             this.direction = Vector3.forward;
             this.Materials = new Dictionary<string, Material>();
-            this.Effects = new List<ShaderMaterial>() {
-                MaterialColorAdjust,
-                MaterialEdgeDetect,
-                //MaterialBluePrint,
-                //MaterialFXAA
+            this.Effects = new Dictionary<string, ShaderMaterial>() {
+                {"Color Adjust",MaterialColorAdjust},
+                {"Edge Detect", MaterialEdgeDetect},
+                {"Blue Print", MaterialBluePrint},
+                {"FXAA", MaterialFXAA}
             };
             LoadShaders();
             UpdateShipBounds();
@@ -223,14 +239,14 @@ namespace KronalUtils
             //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
             foreach (var fx in Effects)
             {
-                if (fx.Enabled)
+                if (fx.Value.Enabled)
                 {
-                    Graphics.Blit(this.rt, this.rt, fx.Material);
+                    Graphics.Blit(this.rt, this.rt, fx.Value.Material);
                 }
             }
         }
 
-        private void SaveTexture(String prefix)
+        private void SaveTexture(String fileName)
         {
             Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
             var saveRt = RenderTexture.active;
@@ -239,10 +255,8 @@ namespace KronalUtils
             screenShot.Apply();
             RenderTexture.active = saveRt;
             byte[] bytes = screenShot.EncodeToPNG();
-            string ShipNameFileSafe = MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString());
-            //Debug.Log(string.Format("launchSiteName: {0} || shipNameField: {1}", EditorLogic.fetch.launchSiteName.ToString(), MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString())));
-            //EditorLogic.shipNameField.Text
-            //string filename = Path.Combine(Application.dataPath, "Screenshots" + Path.PathSeparator + prefix + "_screenshot.png");
+            //string ShipNameFileSafe = MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString());
+			string ShipNameFileSafe = MakeValidFileName(fileName);
             
 
             uint file_inc = 0;
@@ -255,7 +269,7 @@ namespace KronalUtils
                 //if (breakCount > 10) { break; }
                 ++file_inc;
                 //string path = KSPUtil.ApplicationRootPath;
-                filenamebase = prefix + "_" + ShipNameFileSafe + "_" + file_inc.ToString() + ".png";
+                filenamebase = ShipNameFileSafe + "_" + file_inc.ToString() + ".png";
                 //filename = Path.Combine(KSPUtil.ApplicationRootPath, "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
                 filename = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
                 //filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
@@ -285,32 +299,30 @@ namespace KronalUtils
                 return;
             }
 
-            SaveTexture("front");
+            SaveTexture("front" + "_" + ShipName + "_");
         }
 
-        public void Update(bool explode = false, int width = -1, int height = -1)
+        public void Explode()
         {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!EditorLogic.startPod || this.Ship == null)
+            {
+                return;
+            }
+            this.Config.Execute(this.Ship);
+            UpdateShipBounds();
+
+        }
+
+        public void Update(int width = -1, int height = -1)
+        {
+            if (!EditorLogic.startPod || this.Ship == null)
             {
                 return;
             }
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
-            if (explode)
-            {
-                this.Config.Execute(this.Ship);
-            }
-            try
-            {
-                GenTexture(dir, width, height);
-            }
-            finally
-            {
-                if (explode)
-                {
-                    this.Config.Revert();
-                }
-            }
+            GenTexture(dir, width, height);
+            
         }
 
         internal Texture Texture()
