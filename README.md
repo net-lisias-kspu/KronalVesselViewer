@@ -1,4 +1,7 @@
-Kronal Utils for KSP
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-exploded-ship-view)
+
+
+#### Kronal Utils for KSP
 ====================
 
 As I haven't been able to continue developing my KSP related stuff,
@@ -12,7 +15,7 @@ The two zip files contain the blender models I created for my parts and the comp
 
 In `src\` you find:
 
-Axes in the editor
+#### Axes in the editor
 ------------------
 This is named `KRSEditorAxis` and does what the name says, shows 3 cartesian axes in the vessel editor centered around the center of mass of your ship.
 
@@ -21,7 +24,7 @@ The nice thing about it is that it hides some of the axes depending on your posi
 [Here's a YouTube video of it.](https://www.youtube.com/watch?v=fvQ4SPKGc0M)
 
  
-Hinges and stepper motors
+#### ~~Hinges and stepper motors~~
 -------------------------
 
 ~~`KRSHinge` is a part module that can turn anything into a stepper motor I did on my own for kicks and giggles. The difference of this in regards to competing implementations is that~~
@@ -32,7 +35,7 @@ Hinges and stepper motors
 
 Removed.  This fork will not be supporting these parts
 
-Binding keys and analog gamepad controls in the VAB
+#### ~~Binding keys and analog gamepad controls in the VAB~~
 ---------------------------------------------------
 
 ~~Both `KRSControl` and `KRSInputAttribute` enable using a graphical interface to bind keys and gamepad controls (including analog ones) to my part modules.~~
@@ -45,14 +48,14 @@ Binding keys and analog gamepad controls in the VAB
 
 Removed.
 
-Shader material properties parser
+#### Shader material properties parser
 ---------------------------------
 
 In `MaterialProperties` you'll find the class `ShaderMaterial` than can be used to read from a shader material the properties you can tweak in it (the same you'd see if you were to open it in Unity3D).
 
 I use this in `KRSVesselShotUI` to allow the user to edit shader properties from the VAB.
 
-Vessel screenshot utility
+#### Vessel screenshot utility
 -------------------------
 
 This is contained in `KRSVesselShot`, `KRSVesselShotUI` and `VesselViewConfig`. The intent of this is to be a tool for taking a screenshot that covers all your spacecraft, so that you can show it to other people and so on.
