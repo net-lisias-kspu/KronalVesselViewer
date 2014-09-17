@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using KSP;
 
 namespace KronalUtils
 {
@@ -238,23 +239,46 @@ namespace KronalUtils
             screenShot.Apply();
             RenderTexture.active = saveRt;
             byte[] bytes = screenShot.EncodeToPNG();
-            //Debug.Log(string.Format("TEST: {0} or {1}", Path.GetFullPath(Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar), System.IO.Directory.GetParent(Application.dataPath).ToString()));
+            string ShipNameFileSafe = MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString());
+            //Debug.Log(string.Format("launchSiteName: {0} || shipNameField: {1}", EditorLogic.fetch.launchSiteName.ToString(), MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString())));
+            //EditorLogic.shipNameField.Text
             //string filename = Path.Combine(Application.dataPath, "Screenshots" + Path.PathSeparator + prefix + "_screenshot.png");
+            
+
             uint file_inc = 0;
             //uint breakCount = 0;
             string filename = "";
+            string filenamebase = "";
+            
             do{
                 //breakCount = breakCount + 1;
                 //if (breakCount > 10) { break; }
                 ++file_inc;
-                filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
+                //string path = KSPUtil.ApplicationRootPath;
+                filenamebase = prefix + "_" + ShipNameFileSafe + "_" + file_inc.ToString() + ".png";
+                //filename = Path.Combine(KSPUtil.ApplicationRootPath, "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
+                filename = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
+                //filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
                 //Debug.Log(string.Format("FILENAME: {0} FILE EXISTS: {1} NUM: {2}", filename, (File.Exists(filename) ? "YES" : "NO"), file_inc.ToString()));
             }while(File.Exists(filename));
+            //} while (KSP.IO.File.Exists<IDisposable>(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
-            
+
+            //KSP.IO.BinaryWriter screenWriter = KSP.IO.BinaryWriter.CreateForType<IDisposable>(filename);//thanks kethane SVN :) https://mmi-kethane-plugin.googlecode.com/svn-history/r2/trunk/Controller.cs
+            //screenWriter.Write(bytes);
+            //screenWriter.Close();
+//KSP.IO.File.WriteAllText<MuMechJebPod2>(KSP.IO.File.ReadAllText<MuMechJebPod2>(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft"), KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft");
+//System.IO.File.Copy(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft", KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft", true);
+
             Debug.Log(string.Format("Took screenshot to: {0}", filename));
         }
+        private static string MakeValidFileName(string name)
+        {
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
+            return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
+        }
         public void Execute() {
             if (!((EditorLogic.startPod) && (this.Ship != null)))
             {

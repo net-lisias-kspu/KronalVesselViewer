@@ -51,9 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KRSControl.cs" />
     <Compile Include="KRSEditorAxis.cs" />
-    <Compile Include="KRSHinge.cs" />
     <Compile Include="KRSInputAttribute.cs" />
     <Compile Include="KRSUtils.cs" />
     <Compile Include="KRSVesselShot.cs" />
@@ -64,7 +62,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ReRooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VesselViewConfig.cs" />
   </ItemGroup>
@@ -79,8 +76,37 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>rem Set the Variables we need
+echo Finding KSP
+
+if exist "D:\~Games\KSP_Win_PlugInTest_Minimal\KSP.exe" (
+	set GAMEPATH="D:\~Games\KSP_Win_PlugInTest_Minimal"
+) else if exist "D:\~Games\KSP_Win_PlugInTest\KSP.exe" (
+	set GAMEPATH="D:\~Games\KSP_Win_PlugInTest"
+) else if exist "C:\~Games\KSP_Win_PlugInTest\KSP.exe" (
+	set GAMEPATH="C:\~Games\KSP_Win_PlugInTest"
+) else if exist "H:\Steam Games\SteamApps\common\Kerbal Space Program.0.24.2-mod-debug\KSP.exe" (
+	set GAMEPATH="H:\Steam Games\SteamApps\common\Kerbal Space Program.0.24.2-mod-debug"
+)else (
+	echo "Cant find KSP"
+	exit 1
+)
+
+echo Gamepath: %25GAMEPATH%25
+set DestPath="%25GAMEPATH%25\GameData\KronalUtils\Plugins"
+set Binary="%25GAMEPATH%25\KSP.exe"
+if exist "%25GAMEPATH%25\KSP_x64.exe" (set Binary="%25GAMEPATH%25\KSP_x64.exe")
+
+
+if not $(ConfigurationName)==Debug goto END
+:DEBUGCONFIG
+rem Copy DLL and run KSP
+copy "$(TargetPath)" "%25DestPath%25"
+rem and then run the game
+"%25Binary%25"
+goto END
+
+:END</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
