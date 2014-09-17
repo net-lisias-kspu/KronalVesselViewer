@@ -9,6 +9,7 @@ Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/2
 
 * Made 'Stable' with Stock KSP v0.24.2
 * Writes to screenshot folder (Windows/OSX confirmed)
+* Includes name of Vessel in filename
 
 
 ====================
