@@ -33,11 +33,11 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>H:\Steam Games\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>deps\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>H:\Steam Games\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>deps\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +45,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor">
+      <HintPath>deps\UnityEditor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>H:\Steam Games\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\UnityEngine.dll</HintPath>
@@ -76,37 +79,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem Set the Variables we need
-echo Finding KSP
-
-if exist "D:\~Games\KSP_Win_PlugInTest_Minimal\KSP.exe" (
-	set GAMEPATH="D:\~Games\KSP_Win_PlugInTest_Minimal"
-) else if exist "D:\~Games\KSP_Win_PlugInTest\KSP.exe" (
-	set GAMEPATH="D:\~Games\KSP_Win_PlugInTest"
-) else if exist "C:\~Games\KSP_Win_PlugInTest\KSP.exe" (
-	set GAMEPATH="C:\~Games\KSP_Win_PlugInTest"
-) else if exist "H:\Steam Games\SteamApps\common\Kerbal Space Program.0.24.2-mod-debug\KSP.exe" (
-	set GAMEPATH="H:\Steam Games\SteamApps\common\Kerbal Space Program.0.24.2-mod-debug"
-)else (
-	echo "Cant find KSP"
-	exit 1
-)
-
-echo Gamepath: %25GAMEPATH%25
-set DestPath="%25GAMEPATH%25\GameData\KronalUtils\Plugins"
-set Binary="%25GAMEPATH%25\KSP.exe"
-if exist "%25GAMEPATH%25\KSP_x64.exe" (set Binary="%25GAMEPATH%25\KSP_x64.exe")
-
-
-if not $(ConfigurationName)==Debug goto END
-:DEBUGCONFIG
-rem Copy DLL and run KSP
-copy "$(TargetPath)" "%25DestPath%25"
-rem and then run the game
-"%25Binary%25"
-goto END
-
-:END</PostBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

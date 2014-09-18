@@ -82,22 +82,22 @@ namespace KronalUtils
             this.Config = new List<VesselElementViewOptions>() {
                 new VesselElementViewOptions("Stack Decouplers/Separators", CanApplyIfModule("ModuleDecouple")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, StackDecouplerExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, StackDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Radial Decouplers/Separators", CanApplyIfModule("ModuleAnchoredDecoupler")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, RadialDecouplerExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, RadialDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Docking Ports", CanApplyIfModule("ModuleDockingNode")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, DockingPortExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, DockingPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Engine Fairings", CanApplyIfModule("ModuleJettison")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, EngineFairingExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, EngineFairingExplode, true, 1f),
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, false),
                     }
                 },
@@ -116,8 +116,39 @@ namespace KronalUtils
             };
         }
 
+        //updated for simpflication
+        private void StateToggle(bool toggleOn)
+        {
+            var p = EditorLogic.startPod;
+            if (toggleOn)
+            {
+                this.positions.Clear();
+                this.visibility.Clear();
+                this.freezed.Clear();
+            }
+            foreach (var t in p.GetComponentsInChildren<Transform>()){
+                if (toggleOn) { this.positions[t] = t.localPosition; }
+                else if ((!toggleOn) && this.positions.ContainsKey(t)) { t.localPosition = this.positions[t]; }
+            }
+            foreach (var r in p.GetComponentsInChildren<Renderer>())
+            {
+                if (toggleOn) { this.visibility[r] = r.enabled; }
+                else if ((!toggleOn) && this.visibility.ContainsKey(r)) { r.enabled = this.visibility[r]; }
+            }
+            foreach (var part in this.ship.Parts)
+            {
+                if (toggleOn) { this.freezed[part] = part.frozen; }
+                else if ((!toggleOn) && this.freezed.ContainsKey(part)) { part.frozen = this.freezed[part]; }
+            }
+            if (!toggleOn) { this.onRevert(); }
+            //else { this.onSaveState(); }
+        }
+
+        //apply locked state?
         private void SaveState()
         {
+            this.StateToggle(true);
+            /*
             this.positions.Clear();
             this.visibility.Clear();
             this.freezed.Clear();
@@ -133,11 +164,14 @@ namespace KronalUtils
             foreach (var part in this.ship.Parts)
             {
                 this.freezed[part] = part.frozen;
-            }
+            }*/
         }
 
+        //apply locked state?
         public void Revert()
         {
+            this.StateToggle(false);
+            /*
             var p = EditorLogic.startPod;
             foreach (var t in p.GetComponentsInChildren<Transform>())
             {
@@ -163,14 +197,16 @@ namespace KronalUtils
                 }
             }
 
-            this.onRevert();
+            this.onRevert();*/
         }
 
         public void Execute(IShipconstruct ship)
         {
             this.ship = ship;
-            Revert();
-            SaveState();
+
+Debug.Log(string.Format("KVV: Execute is still safe?!"));
+            StateToggle(false);//Revert();
+            StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)
             {
                 foreach (var c in this.Config)
@@ -305,6 +341,7 @@ namespace KronalUtils
         {
             MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
             var nct = part.FindModelTransform("nose_collider");
+            Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
             if (!nct) return;
             MeshFilter mf;
             Vector3 extents = (mf = part.gameObject.GetComponentInChildren<MeshFilter>()) ? mf.mesh.bounds.size : new Vector3(o.valueParam, o.valueParam, o.valueParam);

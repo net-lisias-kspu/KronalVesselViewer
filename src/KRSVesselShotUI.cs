@@ -55,6 +55,14 @@ namespace KronalUtils
         private void ConfigReverted()
         {
             EditorLogic.fetch.Unlock(GetInstanceID().ToString());
+            EditorLogic.fetch.partPanelBtn.controlIsEnabled = true;
+            EditorLogic.fetch.actionPanelBtn.controlIsEnabled = true;
+            EditorLogic.fetch.crewPanelBtn.controlIsEnabled = true;
+            EditorLogic.fetch.saveBtn.controlIsEnabled = true;
+            EditorLogic.fetch.launchBtn.controlIsEnabled = true;
+            EditorLogic.fetch.exitBtn.controlIsEnabled = true;
+            EditorLogic.fetch.loadBtn.controlIsEnabled = true;
+            EditorLogic.fetch.newBtn.controlIsEnabled = true;
         }
 
         public void Update()

@@ -5,19 +5,27 @@ Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/2
 
 ### Bigorangemachine's Fork
 
-#### v0.0.1
+#### v0.0.1 - El Padlina
 
 * Fixed glitch where Save button wouldn't undisable.  Now disables when you click 'Revert' after click 'Explode'
 * Commits from [Pull Request 4e2601f](https://github.com/WojtekWZ/ksp-kronalutils/commit/4e2601f071dcb2d573b49d096c2a7c3e0fdf05ae) from [Git WojtekWZ](https://github.com/WojtekWZ) aka [Reddit /u/el_padlina](http://www.reddit.com/user/el_padlina)
   * Added GUI Button
   * New Dials for better control over shaders
+* To Install:
+  * Everything is new
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files
+  * No Dependancies
 
 
-#### v0.0.0
+#### v0.0.0 - Revival
 
 * Made 'Stable' with Stock KSP v0.24.2
 * Writes to screenshot folder (Windows/OSX confirmed)
 * Includes name of Vessel in filename
+* To Install: 
+  * Everything is new
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files
+  * No Dependancies
 
 
 ====================
