@@ -16,6 +16,7 @@ namespace KronalUtils
         public float valueParam;
         public string valueFormat;
 
+        //constructor
         public VesselElementViewOption(string name, bool isToggle, bool hasParam,
             Action<VesselElementViewOptions, VesselElementViewOption, Part> apply,
             bool defaultValueActive = false, float defaultValueParam = 0f,
@@ -37,6 +38,7 @@ namespace KronalUtils
         public Func<Part, bool> CanApply { get; private set; }
         public List<VesselElementViewOption> Options { get; private set; }
 
+        //constructor
         public VesselElementViewOptions(string name, Func<Part, bool> canApply)
         {
             this.Name = name;
@@ -69,6 +71,7 @@ namespace KronalUtils
         public Action onApply;
         public Action onRevert;
 
+        //constructor
         public VesselViewConfig()
         {
             this.positions = new Dictionary<Transform, Vector3>();

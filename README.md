@@ -5,6 +5,14 @@ Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/2
 
 ### Bigorangemachine's Fork
 
+#### v0.0.1
+
+* Fixed glitch where Save button wouldn't undisable.  Now disables when you click 'Revert' after click 'Explode'
+* Commits from [Pull Request 4e2601f](https://github.com/WojtekWZ/ksp-kronalutils/commit/4e2601f071dcb2d573b49d096c2a7c3e0fdf05ae) from [Git WojtekWZ](https://github.com/WojtekWZ) aka [Reddit /u/el_padlina](http://www.reddit.com/user/el_padlina)
+  * Added GUI Button
+  * New Dials for better control over shaders
+
+
 #### v0.0.0
 
 * Made 'Stable' with Stock KSP v0.24.2
