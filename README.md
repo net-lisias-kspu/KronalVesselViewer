@@ -6,6 +6,14 @@ Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalut
 
 ### Bigorangemachine's Fork
 
+#### v0.0.2b - Damn'd Defaults
+
+* Change Config Defaults
+* To Install:
+  * Download Source Code (Ignore Zip)
+  * Build in from C#
+  * Install Normally
+
 #### v0.0.1 - El Padlina
 
 * Fixed glitch where Save button wouldn't undisable.  Now disables when you click 'Revert' after click 'Explode'
