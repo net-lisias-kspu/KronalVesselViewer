@@ -1,5 +1,6 @@
 Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-exploded-ship-view)
 
+Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
 ==========================================
 
