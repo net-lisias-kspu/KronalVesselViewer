@@ -26,16 +26,16 @@ namespace KronalUtils
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
         internal Vector3 position;
-        internal bool EffectsAntiAliasing { get; set; }
+        internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
         internal bool Orthographic
         {
             get
             {
-                return this.Camera == this.cameras[0];
+                return this.Camera == this.cameras[0];//if this currently selected camera is the first camera then Orthographic is true
             }
             set
             {
-                this.Camera = this.cameras[value ? 0 : 1];
+                this.Camera = this.cameras[value ? 0 : 1];//if setting to true use the first camera (which is ortho camera). if false use the non-ortho
             }
         }
         internal VesselViewConfig Config { get; private set; }
@@ -205,12 +205,12 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
-            float positionOffset;
+            float positionOffset = 0f;
             if (this.Orthographic)
             {
                 this.Camera.transform.Translate(Vector3.Scale(this.position, new Vector3(1f, 1f, 0f)));
                 this.Camera.orthographicSize = (height - this.position.z) / 2f;
-                positionOffset = 0f;
+                //positionOffset = 0f;
             }
             else
             {
