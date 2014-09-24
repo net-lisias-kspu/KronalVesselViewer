@@ -11,6 +11,7 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 #### v0.0.2b - Damn'd Defaults
 
 * Change Config Defaults
+* Changed button layouts and preview
 * To Install:
   * Download Source Code (Ignore Zip)
   * Build in from C#
