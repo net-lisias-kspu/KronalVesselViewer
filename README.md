@@ -14,6 +14,16 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
+#### v0.0.3a - deckblad
+* [Git deckblad](https://github.com/deckblad) improved screenshot resolution (higher quality renders)
+* Nils Daumann [\(Git Slin\)](https://github.com/Slin/) was kind enough to change the license on the fxaa shader. 
+* To Install:
+  * Download Source Code (Ignore Zip)
+  * Build with required KSP DLLs
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+  * Build in from C#
+  * Install Normally (or use a batch script)
+
 #### v0.0.2 - Dat-U-Eye
 
 * Change Config Defaults
