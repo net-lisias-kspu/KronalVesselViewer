@@ -101,6 +101,11 @@ namespace KronalUtils
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, false),
                     }
                 },
+                new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
+                    Options = {
+                        new VesselElementViewOption("Explode", true, true, KASConnectorPortExplode, false, 1f),
+                    }
+                },
                 new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
                     Options = {
                         new VesselElementViewOption("Explode", true, true, ProcFairingExplode, false, 1f),
@@ -335,6 +340,27 @@ Debug.Log(string.Format("KVV: Execute is still safe?!"));
                     r.enabled = false;
                 }
             }
+        }
+
+        private void KASConnectorPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
+        {
+            MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
+            var module = part.Module<KAS.KASModulePort>();
+            if (string.IsNullOrEmpty(module.attachNode)) return;
+            var an = part.findAttachNode(module.attachNode);
+            if (!an.attachedPart) return;
+            var distance = o.valueParam;
+            Part partToBeMoved;
+            if (an.attachedPart == part.parent)
+            {
+                distance *= -1;
+                partToBeMoved = part;
+            }
+            else
+            {
+                partToBeMoved = an.attachedPart;
+            }
+            partToBeMoved.transform.Translate(module.portNode.forward * distance, Space.World);
         }
 
         private void ProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
