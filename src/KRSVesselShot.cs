@@ -222,12 +222,15 @@ namespace KronalUtils
             if (imageWidth <= 0 || imageHeight <= 0)
             {
                 this.Camera.aspect = width / height;
-                // a very tall rocket gets good resolution
-                // 1000 width / 3000 height = 0.333
-                // 5000 / .3 = rule
-                // a wide image wasn't getting good res
-                // 3000 width / 1000 height = 3
-                // 5000 / 3 = suck
+
+                /*
+                 * Deckblad : Trying to lock all renders to a nice beefy size. 
+                 * My code will always use the largest image to fit within 5000x5000px as defined above in maxWidth / maxHeight
+                 * Please double-check my math. It was late...
+
+                    imageHeight = (int)Mathf.Clamp(100f * height, 0f, Math.Min(maxHeight, maxWidth / this.Camera.aspect));
+                    imageWidth = (int)(imageHeight * this.Camera.aspect);
+                */
                 if (height >= width)
                 {
                     imageHeight = (int)maxHeight;
@@ -238,13 +241,6 @@ namespace KronalUtils
                     imageWidth = (int)maxWidth;
                     imageHeight = (int)(imageWidth / this.Camera.aspect);
                 }
-                /*
-                 * Deckblad : Trying to lock all renders to a nice beefy size.
-                 * 
-                 * 
-                imageHeight = (int)Mathf.Clamp(100f * height, 0f, Math.Min(maxHeight, maxWidth / this.Camera.aspect));
-                imageWidth = (int)(imageHeight * this.Camera.aspect);
-                */
             }
             else
             {
@@ -270,13 +266,11 @@ namespace KronalUtils
         private void SaveTexture(String fileName)
         {
             //TextureFormat.ARGB32 for transparent
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
             Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
             
             var saveRt = RenderTexture.active;//why is this var and not typed?
             //RenderTexture saveRt = RenderTexture.active;//not this?
             RenderTexture.active = this.rt;
-            //screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
             screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
             screenShot.Apply();
             RenderTexture.active = saveRt;
@@ -332,7 +326,6 @@ namespace KronalUtils
         }
 
         public void Update(int width = -1, int height = -1)
-
         {
             if (!EditorLogic.startPod || this.Ship == null)
             {
