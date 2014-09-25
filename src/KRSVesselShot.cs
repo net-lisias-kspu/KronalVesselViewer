@@ -20,7 +20,7 @@ namespace KronalUtils
 
         private Camera[] cameras;
         private RenderTexture rt;
-        private int maxWidth = 5000;
+        private int maxWidth = 9999;
         private int maxHeight = 5000;
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
