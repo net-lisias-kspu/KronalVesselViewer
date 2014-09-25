@@ -31,7 +31,7 @@ namespace KronalUtils
         public void Awake()
         {
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
-            string[] configAppend = {"Exploded View Config"};
+            string[] configAppend = {"Part Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             /*

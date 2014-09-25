@@ -103,7 +103,7 @@ namespace KronalUtils
                 },
                 new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, KASConnectorPortExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, KASConnectorPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
@@ -345,7 +345,7 @@ Debug.Log(string.Format("KVV: Execute is still safe?!"));
         private void KASConnectorPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
             MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
-            var module = part.Module<KAS.KASModulePort>();
+            var module = part.Module<KAS.KASModulePort>();//this creates KAS Dependancy.  
             if (string.IsNullOrEmpty(module.attachNode)) return;
             var an = part.findAttachNode(module.attachNode);
             if (!an.attachedPart) return;

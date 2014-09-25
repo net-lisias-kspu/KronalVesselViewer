@@ -22,6 +22,9 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 * To Install:
   * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL is only changed file but be sure replace everything)
   * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
 
 #### v0.0.1 - El Padlina
 
