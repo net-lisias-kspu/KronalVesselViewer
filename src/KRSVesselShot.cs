@@ -26,16 +26,16 @@ namespace KronalUtils
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
         internal Vector3 position;
-        internal bool EffectsAntiAliasing { get; set; }
+        internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
         internal bool Orthographic
         {
             get
             {
-                return this.Camera == this.cameras[0];
+                return this.Camera == this.cameras[0];//if this currently selected camera is the first camera then Orthographic is true
             }
             set
             {
-                this.Camera = this.cameras[value ? 0 : 1];
+                this.Camera = this.cameras[value ? 0 : 1];//if setting to true use the first camera (which is ortho camera). if false use the non-ortho
             }
         }
         internal VesselViewConfig Config { get; private set; }
@@ -205,12 +205,12 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
-            float positionOffset;
+            float positionOffset = 0f;
             if (this.Orthographic)
             {
                 this.Camera.transform.Translate(Vector3.Scale(this.position, new Vector3(1f, 1f, 0f)));
                 this.Camera.orthographicSize = (height - this.position.z) / 2f;
-                positionOffset = 0f;
+                //positionOffset = 0f;
             }
             else
             {
@@ -248,49 +248,34 @@ namespace KronalUtils
 
         private void SaveTexture(String fileName)
         {
+            //TextureFormat.ARGB32 for transparent
             Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
+            
             var saveRt = RenderTexture.active;
             RenderTexture.active = this.rt;
             screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
             screenShot.Apply();
             RenderTexture.active = saveRt;
             byte[] bytes = screenShot.EncodeToPNG();
-            //string ShipNameFileSafe = MakeValidFileName(EditorLogic.fetch.shipNameField.Text.ToString());
 			string ShipNameFileSafe = MakeValidFileName(fileName);
-            
-
             uint file_inc = 0;
             //uint breakCount = 0;
             string filename = "";
             string filenamebase = "";
             
             do{
-                //breakCount = breakCount + 1;
-                //if (breakCount > 10) { break; }
                 ++file_inc;
-                //string path = KSPUtil.ApplicationRootPath;
                 filenamebase = ShipNameFileSafe + "_" + file_inc.ToString() + ".png";
-                //filename = Path.Combine(KSPUtil.ApplicationRootPath, "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
                 filename = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
-                //filename = Path.Combine(System.IO.Directory.GetParent(Application.dataPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + prefix + "_vessel" + "_" + file_inc.ToString() + ".png");
-                //Debug.Log(string.Format("FILENAME: {0} FILE EXISTS: {1} NUM: {2}", filename, (File.Exists(filename) ? "YES" : "NO"), file_inc.ToString()));
             }while(File.Exists(filename));
-            //} while (KSP.IO.File.Exists<IDisposable>(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
 
-            //KSP.IO.BinaryWriter screenWriter = KSP.IO.BinaryWriter.CreateForType<IDisposable>(filename);//thanks kethane SVN :) https://mmi-kethane-plugin.googlecode.com/svn-history/r2/trunk/Controller.cs
-            //screenWriter.Write(bytes);
-            //screenWriter.Close();
-//KSP.IO.File.WriteAllText<MuMechJebPod2>(KSP.IO.File.ReadAllText<MuMechJebPod2>(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft"), KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft");
-//System.IO.File.Copy(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft", KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft", true);
-
-            Debug.Log(string.Format("Took screenshot to: {0}", filename));
+            Debug.Log(string.Format("KVV: Took screenshot to: {0}", filename));
         }
         private static string MakeValidFileName(string name)
         {
             string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
             string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
-
             return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
         }
         public void Execute() {
@@ -299,7 +284,7 @@ namespace KronalUtils
                 return;
             }
 
-            SaveTexture("front" + "_" + ShipName + "_");
+            SaveTexture("front" + "_" + ShipName);
         }
 
         public void Explode()

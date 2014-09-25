@@ -1,23 +1,52 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-exploded-ship-view)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
 
+Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
+
+Developers who wish to contribute should [branch dev-master](https://github.com/bigorangemachine/ksp-kronalutils/tree/dev-master).
+
+`git clone git@github.com:bigorangemachine/ksp-kronalutils.git`
+
+`cd ksp-kronalutils/`
+
+`git checkout dev-master`
 
 ==========================================
 
 ### Bigorangemachine's Fork
 
-#### v0.0.1
+#### v0.0.2 - Dat-U-Eye
+
+* Change Config Defaults
+* Changed button layouts and preview
+* [Git deckblad](https://github.com/deckblad) added support for [KAS Parts](https://github.com/KospY/KAS)
+* To Install:
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL is only changed file but be sure replace everything)
+  * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+
+#### v0.0.1 - El Padlina
 
 * Fixed glitch where Save button wouldn't undisable.  Now disables when you click 'Revert' after click 'Explode'
 * Commits from [Pull Request 4e2601f](https://github.com/WojtekWZ/ksp-kronalutils/commit/4e2601f071dcb2d573b49d096c2a7c3e0fdf05ae) from [Git WojtekWZ](https://github.com/WojtekWZ) aka [Reddit /u/el_padlina](http://www.reddit.com/user/el_padlina)
   * Added GUI Button
   * New Dials for better control over shaders
+* To Install:
+  * Everything is new
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files
+  * No Dependancies
 
 
-#### v0.0.0
+#### v0.0.0 - Revival
 
 * Made 'Stable' with Stock KSP v0.24.2
 * Writes to screenshot folder (Windows/OSX confirmed)
 * Includes name of Vessel in filename
+* To Install: 
+  * Everything is new
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files
+  * No Dependancies
 
 
 ====================

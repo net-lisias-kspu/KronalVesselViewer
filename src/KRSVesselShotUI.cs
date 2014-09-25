@@ -12,9 +12,9 @@ namespace KronalUtils
         private KRSVesselShot control = new KRSVesselShot();
         private Rect windowSize;
         private Vector2 windowScrollPos;
-        private int tabCurrent;
-        private string[] tabNames;
-        private Action[] tabGUI;
+        private int tabCurrent;//almost obsolete
+        private string[] tabNames;//obsolete
+        private Action[] tabGUI;//obsolete
         private int shaderTabCurrent;
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
@@ -31,9 +31,9 @@ namespace KronalUtils
         public void Awake()
         {
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
+            string[] configAppend = {"Part Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
-            this.tabNames = new string[] { "View", "Config" };
-            this.tabGUI = new Action[] { GUITabView, GUITabConfig };
+            this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             this.control.Config.onApply += ConfigApplied;
             this.control.Config.onRevert += ConfigReverted;
 
@@ -42,27 +42,40 @@ namespace KronalUtils
 
         private void ConfigApplied()
         {
-            EditorLogic.fetch.partPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.actionPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.crewPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.saveBtn.controlIsEnabled = false;
-            EditorLogic.fetch.launchBtn.controlIsEnabled = false;
-            EditorLogic.fetch.exitBtn.controlIsEnabled = false;
-            EditorLogic.fetch.loadBtn.controlIsEnabled = true;
-            EditorLogic.fetch.newBtn.controlIsEnabled = true;
+            ButtonMode(false);
         }
 
         private void ConfigReverted()
         {
             EditorLogic.fetch.Unlock(GetInstanceID().ToString());
-            EditorLogic.fetch.partPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.actionPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.crewPanelBtn.controlIsEnabled = true;
-            EditorLogic.fetch.saveBtn.controlIsEnabled = true;
-            EditorLogic.fetch.launchBtn.controlIsEnabled = true;
-            EditorLogic.fetch.exitBtn.controlIsEnabled = true;
-            EditorLogic.fetch.loadBtn.controlIsEnabled = true;
-            EditorLogic.fetch.newBtn.controlIsEnabled = true;
+            ButtonMode(true);
+        }
+        
+        private void ButtonMode(bool isOn){
+            if (isOn)
+            {
+                EditorLogic.fetch.partPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.actionPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.crewPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.saveBtn.controlIsEnabled = true;
+                EditorLogic.fetch.launchBtn.controlIsEnabled = true;
+                EditorLogic.fetch.exitBtn.controlIsEnabled = true;
+                EditorLogic.fetch.loadBtn.controlIsEnabled = true;
+                EditorLogic.fetch.newBtn.controlIsEnabled = true;
+            }
+            else
+            {
+                EditorLogic.fetch.partPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.actionPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.crewPanelBtn.controlIsEnabled = true;
+                EditorLogic.fetch.saveBtn.controlIsEnabled = false;
+                EditorLogic.fetch.launchBtn.controlIsEnabled = false;
+                EditorLogic.fetch.exitBtn.controlIsEnabled = false;
+                EditorLogic.fetch.loadBtn.controlIsEnabled = true;
+                EditorLogic.fetch.newBtn.controlIsEnabled = true;
+
+            }
+
         }
 
         public void Update()
@@ -86,9 +99,9 @@ namespace KronalUtils
         private void GUIWindow(int id)
         {
             GUILayout.BeginVertical("box");
-            GUIButtons();
-            GUITabShader(this.shaderTabsNames[this.shaderTabCurrent]);
-            this.tabGUI[this.tabCurrent]();
+            GUIButtons();//draw top buttons
+            GUITabShader(this.shaderTabsNames[this.shaderTabCurrent]);//draw shader control buttons
+            GUITabView();//show the screenshot preview
             GUILayout.EndVertical();
             GUI.DragWindow();
         }
@@ -163,7 +176,7 @@ namespace KronalUtils
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
-            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.ExpandHeight(true)))
+            if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
             {
                 this.control.direction = Vector3.forward;
                 this.control.position = Vector3.zero;
@@ -171,21 +184,29 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Ortho");
-            this.control.EffectsAntiAliasing = GUILayout.Toggle(this.control.EffectsAntiAliasing, "AA");
+            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             this.shaderTabCurrent = GUILayout.Toolbar(this.shaderTabCurrent, this.shaderTabsNames);
             GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            this.tabCurrent = GUILayout.Toolbar(this.tabCurrent, this.tabNames);
-            GUILayout.EndHorizontal();
+            
+            this.tabCurrent = 0;//used only in Update() be 0.  This will be removed later
         }
-
+        private bool GUITabShaderIncExceeded()
+        {
+            if (this.shaderTabCurrent < this.control.Effects.Keys.ToArray<string>().Length) { return true; }//valid effect
+            return false;
+        }
         private void GUITabShader(string name)
         {
+            if (Array.IndexOf(this.control.Effects.Keys.ToArray<string>(), name) <= -1)//effect not found!
+            {
+                GUILayout.BeginHorizontal();
+                GUITabConfig();
+                GUILayout.EndHorizontal();
+                return;
+            }
             GUILayout.BeginHorizontal();
             this.control.Effects[name].Enabled = GUILayout.Toggle(this.control.Effects[name].Enabled, "Active");
             GUILayout.EndHorizontal();

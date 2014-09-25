@@ -82,23 +82,28 @@ namespace KronalUtils
             this.Config = new List<VesselElementViewOptions>() {
                 new VesselElementViewOptions("Stack Decouplers/Separators", CanApplyIfModule("ModuleDecouple")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, StackDecouplerExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, StackDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Radial Decouplers/Separators", CanApplyIfModule("ModuleAnchoredDecoupler")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, RadialDecouplerExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, RadialDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Docking Ports", CanApplyIfModule("ModuleDockingNode")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, DockingPortExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, DockingPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Engine Fairings", CanApplyIfModule("ModuleJettison")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, EngineFairingExplode, false, 1f),
+                        new VesselElementViewOption("Explode", true, true, EngineFairingExplode, true, 1f),
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, false),
+                    }
+                },
+                new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
+                    Options = {
+                        new VesselElementViewOption("Explode", true, true, KASConnectorPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
@@ -116,61 +121,52 @@ namespace KronalUtils
             };
         }
 
-        private void SaveState()
+        //updated for simpflication
+        private void StateToggle(bool toggleOn)
         {
-            this.positions.Clear();
-            this.visibility.Clear();
-            this.freezed.Clear();
             var p = EditorLogic.startPod;
-            foreach (var t in p.GetComponentsInChildren<Transform>())
+            if (toggleOn)
             {
-                this.positions[t] = t.localPosition;
+                this.positions.Clear();
+                this.visibility.Clear();
+                this.freezed.Clear();
+            }
+            foreach (var t in p.GetComponentsInChildren<Transform>()){
+                if (toggleOn) { this.positions[t] = t.localPosition; }
+                else if ((!toggleOn) && this.positions.ContainsKey(t)) { t.localPosition = this.positions[t]; }
             }
             foreach (var r in p.GetComponentsInChildren<Renderer>())
             {
-                this.visibility[r] = r.enabled;
+                if (toggleOn) { this.visibility[r] = r.enabled; }
+                else if ((!toggleOn) && this.visibility.ContainsKey(r)) { r.enabled = this.visibility[r]; }
             }
             foreach (var part in this.ship.Parts)
             {
-                this.freezed[part] = part.frozen;
+                if (toggleOn) { this.freezed[part] = part.frozen; }
+                else if ((!toggleOn) && this.freezed.ContainsKey(part)) { part.frozen = this.freezed[part]; }
             }
+            if (!toggleOn) { this.onRevert(); }
+            //else { this.onSaveState(); }
         }
 
+        //apply locked state?
+        private void SaveState()
+        {
+            this.StateToggle(true);
+        }
+
+        //apply locked state?
         public void Revert()
         {
-            var p = EditorLogic.startPod;
-            foreach (var t in p.GetComponentsInChildren<Transform>())
-            {
-                if (this.positions.ContainsKey(t))
-                {
-                    t.localPosition = this.positions[t];
-                }
-            }
-                
-            foreach (var r in p.GetComponentsInChildren<Renderer>())
-            {
-                if (this.visibility.ContainsKey(r))
-                {
-                    r.enabled = this.visibility[r];
-                }
-            }
-
-            foreach (var part in this.ship.Parts)
-            {
-                if (this.freezed.ContainsKey(part))
-                {
-                    part.frozen = this.freezed[part];
-                }
-            }
-
-            this.onRevert();
+            this.StateToggle(false);
         }
 
         public void Execute(IShipconstruct ship)
         {
             this.ship = ship;
-            Revert();
-            SaveState();
+
+            StateToggle(false);//Revert();
+            StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)
             {
                 foreach (var c in this.Config)
@@ -301,10 +297,32 @@ namespace KronalUtils
             }
         }
 
+        private void KASConnectorPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
+        {
+            MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
+            var module = part.Module<KAS.KASModulePort>();//this creates KAS Dependancy.  
+            if (string.IsNullOrEmpty(module.attachNode)) return;
+            var an = part.findAttachNode(module.attachNode);
+            if (!an.attachedPart) return;
+            var distance = o.valueParam;
+            Part partToBeMoved;
+            if (an.attachedPart == part.parent)
+            {
+                distance *= -1;
+                partToBeMoved = part;
+            }
+            else
+            {
+                partToBeMoved = an.attachedPart;
+            }
+            partToBeMoved.transform.Translate(module.portNode.forward * distance, Space.World);
+        }
+
         private void ProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
             MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
             var nct = part.FindModelTransform("nose_collider");
+            Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
             if (!nct) return;
             MeshFilter mf;
             Vector3 extents = (mf = part.gameObject.GetComponentInChildren<MeshFilter>()) ? mf.mesh.bounds.size : new Vector3(o.valueParam, o.valueParam, o.valueParam);
