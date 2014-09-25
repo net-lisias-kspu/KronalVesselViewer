@@ -5,21 +5,22 @@ Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalut
 Developers who wish to contribute should [branch dev-master](https://github.com/bigorangemachine/ksp-kronalutils/tree/dev-master).
 
 `git clone git@github.com:bigorangemachine/ksp-kronalutils.git`
-cd ksp-kronalutils/
-git checkout dev-master`
+
+`cd ksp-kronalutils/`
+
+`git checkout dev-master`
 
 ==========================================
 
 ### Bigorangemachine's Fork
 
-#### v0.0.2b - Damn'd Defaults
+#### v0.0.2 - Dat-U-Eye
 
 * Change Config Defaults
 * Changed button layouts and preview
 * To Install:
-  * Download Source Code (Ignore Zip)
-  * Build in from C#
-  * Install Normally
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL is only changed file but be sure replace everything)
+  * No Dependancies
 
 #### v0.0.1 - El Padlina
 
