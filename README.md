@@ -18,7 +18,7 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 * Change Config Defaults
 * Changed button layouts and preview
-* [Git deckblad added support](https://github.com/deckblad) for [KAS Parts](https://github.com/KospY/KAS)
+* [Git deckblad](https://github.com/deckblad) added support for [KAS Parts](https://github.com/KospY/KAS)
 * To Install:
   * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL is only changed file but be sure replace everything)
   * No Dependancies
