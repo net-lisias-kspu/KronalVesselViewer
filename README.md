@@ -4,6 +4,9 @@ Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalut
 
 Developers who wish to contribute should [branch dev-master](https://github.com/bigorangemachine/ksp-kronalutils/tree/dev-master).
 
+`git clone git@github.com:bigorangemachine/ksp-kronalutils.git`
+`git checkout dev-master`
+
 ==========================================
 
 ### Bigorangemachine's Fork
