@@ -15,6 +15,7 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.3a - deckblad
+* GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
 * [Git deckblad](https://github.com/deckblad) improved screenshot resolution (higher quality renders)
 * Nils Daumann [\(Git Slin\)](https://github.com/Slin/) was kind enough to change the license on the fxaa shader. 
 * To Install:
