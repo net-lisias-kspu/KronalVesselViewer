@@ -10,6 +10,8 @@ namespace KronalUtils
     class KRSVesselShotUI : MonoBehaviour
     {
         private KRSVesselShot control = new KRSVesselShot();
+        bool mySoftLock = false;//not to be confused with EditorLogic.softLock
+        private string inputLockIdent = "KVV-EditorLock";
         private Rect windowSize;
         private Vector2 windowScrollPos;
         private int tabCurrent;//almost obsolete
@@ -34,9 +36,6 @@ namespace KronalUtils
             string[] configAppend = {"Part Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
-            /*
-            this.tabNames = new string[] { "View", "Config" };
-            this.tabGUI = new Action[] { GUITabView, GUITabConfig };*/
             this.control.Config.onApply += ConfigApplied;
             this.control.Config.onRevert += ConfigReverted;
 
@@ -88,24 +87,74 @@ namespace KronalUtils
                 this.control.Update((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
         }
+        bool isMouseOver()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
+        {
+            Vector2 position = new Vector2(Input.mousePosition.x,
+                                           Screen.height - Input.mousePosition.y);
+            //return winRect.Contains(position);
+            return this.windowSize.Contains(position);
+        }
+        /* Whenever we mouseover our window, we need to lock the editor so we don't pick up
+         * parts while dragging the window around */
+        void setEditorLock()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296
+        {
+            if (visible)
+            {
+                bool mouseOver = isMouseOver();
+                if (mouseOver && !mySoftLock)
+                {
+                    mySoftLock = true;
+                    ControlTypes controlTypes = ControlTypes.CAMERACONTROLS
+                                                | ControlTypes.EDITOR_ICON_HOVER
+                                                | ControlTypes.EDITOR_ICON_PICK
+                                                | ControlTypes.EDITOR_PAD_PICK_PLACE
+                                                | ControlTypes.EDITOR_PAD_PICK_COPY
+                                                | ControlTypes.EDITOR_EDIT_STAGES
+                                                | ControlTypes.EDITOR_ROTATE_PARTS
+                                                | ControlTypes.EDITOR_OVERLAYS;
 
+                    InputLockManager.SetControlLock(controlTypes, this.inputLockIdent);
+                }
+                else if (!mouseOver && mySoftLock)
+                {
+                    mySoftLock = false;
+                    InputLockManager.RemoveControlLock(this.inputLockIdent);
+                }
+            }
+            else if (mySoftLock)
+            {
+                mySoftLock = false;
+                InputLockManager.RemoveControlLock(this.inputLockIdent);
+            }
+        }
         public void OnGUI()
         {
+            switch (HighLogic.LoadedScene) {//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
+                case GameScenes.EDITOR:
+                case GameScenes.SPH:
+                    break;
+                default:
+                    /* don't show window during scene changes */
+                    return;
+            }
             if (visible) 
             {
+                //winRect = GUILayout.Window (winID, winRect, drawWindow, title);
                 this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
+                EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);//EditorLogic.softLock not supported anymore? this.windowSize is static not dynamic with drag & drop? what does this do?
             }
-            
-            EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);
+
+            if (Event.current.type == EventType.Repaint)
+            {
+                setEditorLock();
+            }
         }
 
         private void GUIWindow(int id)
         {
-//Debug.Log(String.Format("GUIWindow({0})", id.ToString()));
             GUILayout.BeginVertical("box");
             GUIButtons();//draw top buttons
             GUITabShader(this.shaderTabsNames[this.shaderTabCurrent]);//draw shader control buttons
-            //this.tabGUI[this.tabCurrent]();
             GUITabView();//show the screenshot preview
             GUILayout.EndVertical();
             GUI.DragWindow();
@@ -181,7 +230,6 @@ namespace KronalUtils
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
-            //if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.ExpandHeight(true)))
             if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
             {
                 this.control.direction = Vector3.forward;
@@ -214,7 +262,6 @@ namespace KronalUtils
 //Debug.Log(String.Format("GUITabShader({0}) INDEX: {1} : ARR: {2}", name.ToString(), Array.IndexOf(this.control.Effects.Keys.ToArray<string>(), name).ToString(), this.control.Effects.Keys.ToArray<string>()));
             if (Array.IndexOf(this.control.Effects.Keys.ToArray<string>(), name) <= -1)//effect not found!
             {
-//Debug.Log(String.Format("- IF GUITabShader"));
                 GUILayout.BeginHorizontal();
                 GUITabConfig();
                 GUILayout.EndHorizontal();
