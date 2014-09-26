@@ -16,7 +16,7 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 #### v0.0.3a - mrBlaQ
 * GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
-* [Git deckblad](https://github.com/deckblad) (KSP forums mrBlaQ) improved screenshot resolution (higher quality renders)
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) improved screenshot resolution (higher quality renders)
 * Nils Daumann [\(Git Slin\)](https://github.com/Slin/) was kind enough to change the license on the fxaa shader. 
 * To Install:
   * Download Source Code (Ignore Zip)
