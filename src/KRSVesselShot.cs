@@ -271,8 +271,7 @@ namespace KronalUtils
             //TextureFormat.ARGB32 for transparent
             Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
             
-            var saveRt = RenderTexture.active;//why is this var and not typed?
-            //RenderTexture saveRt = RenderTexture.active;//not this?
+            var saveRt = RenderTexture.active;
             RenderTexture.active = this.rt;
             screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
             screenShot.Apply();

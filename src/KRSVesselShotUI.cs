@@ -239,17 +239,13 @@ namespace KronalUtils
 
             GUILayout.BeginHorizontal();
             this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic");
-            //this.control.EffectsAntiAliasing = GUILayout.Toggle(this.control.EffectsAntiAliasing, "AA");//does nothing
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             this.shaderTabCurrent = GUILayout.Toolbar(this.shaderTabCurrent, this.shaderTabsNames);
             GUILayout.EndHorizontal();
-
-            //GUILayout.BeginHorizontal();
-            //this.tabCurrent = GUILayout.Toolbar(this.tabCurrent, this.tabNames);//toolbar holds the buttons returns which is active. you set the active here
+            
             this.tabCurrent = 0;//used only in Update() be 0.  This will be removed later
-            //GUILayout.EndHorizontal();
         }
         private bool GUITabShaderIncExceeded()
         {
@@ -258,8 +254,6 @@ namespace KronalUtils
         }
         private void GUITabShader(string name)
         {
-
-//Debug.Log(String.Format("GUITabShader({0}) INDEX: {1} : ARR: {2}", name.ToString(), Array.IndexOf(this.control.Effects.Keys.ToArray<string>(), name).ToString(), this.control.Effects.Keys.ToArray<string>()));
             if (Array.IndexOf(this.control.Effects.Keys.ToArray<string>(), name) <= -1)//effect not found!
             {
                 GUILayout.BeginHorizontal();
