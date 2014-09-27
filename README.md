@@ -1,4 +1,4 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=4eSG00adjAw)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
