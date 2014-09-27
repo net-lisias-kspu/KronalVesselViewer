@@ -224,6 +224,9 @@ namespace KronalUtils
                 this.Camera.aspect = width / height;
 
                 /*
+                 * BOM: Looks right to me 
+                 *      Verified: http://math.stackexchange.com/questions/180804/how-to-get-the-aspect-ratio-of-an-image
+                 * 
                  * Deckblad : Trying to lock all renders to a nice beefy size. 
                  * My code will always use the largest image to fit within 5000x5000px as defined above in maxWidth / maxHeight
                  * Please double-check my math. It was late...
