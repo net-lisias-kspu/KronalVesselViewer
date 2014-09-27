@@ -153,63 +153,18 @@ namespace KronalUtils
         private void SaveState()
         {
             this.StateToggle(true);
-            /*
-            this.positions.Clear();
-            this.visibility.Clear();
-            this.freezed.Clear();
-            var p = EditorLogic.startPod;
-            foreach (var t in p.GetComponentsInChildren<Transform>())
-            {
-                this.positions[t] = t.localPosition;
-            }
-            foreach (var r in p.GetComponentsInChildren<Renderer>())
-            {
-                this.visibility[r] = r.enabled;
-            }
-            foreach (var part in this.ship.Parts)
-            {
-                this.freezed[part] = part.frozen;
-            }*/
         }
 
         //apply locked state?
         public void Revert()
         {
             this.StateToggle(false);
-            /*
-            var p = EditorLogic.startPod;
-            foreach (var t in p.GetComponentsInChildren<Transform>())
-            {
-                if (this.positions.ContainsKey(t))
-                {
-                    t.localPosition = this.positions[t];
-                }
-            }
-                
-            foreach (var r in p.GetComponentsInChildren<Renderer>())
-            {
-                if (this.visibility.ContainsKey(r))
-                {
-                    r.enabled = this.visibility[r];
-                }
-            }
-
-            foreach (var part in this.ship.Parts)
-            {
-                if (this.freezed.ContainsKey(part))
-                {
-                    part.frozen = this.freezed[part];
-                }
-            }
-
-            this.onRevert();*/
         }
 
         public void Execute(IShipconstruct ship)
         {
             this.ship = ship;
 
-Debug.Log(string.Format("KVV: Execute is still safe?!"));
             StateToggle(false);//Revert();
             StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)

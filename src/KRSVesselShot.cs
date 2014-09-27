@@ -282,20 +282,11 @@ namespace KronalUtils
             string filenamebase = "";
             
             do{
-                //breakCount = breakCount + 1;
-                //if (breakCount > 10) { break; }
                 ++file_inc;
                 filenamebase = ShipNameFileSafe + "_" + file_inc.ToString() + ".png";
                 filename = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots" + Path.DirectorySeparatorChar + filenamebase);
             }while(File.Exists(filename));
-            //} while (KSP.IO.File.Exists<IDisposable>(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
-
-            //KSP.IO.BinaryWriter screenWriter = KSP.IO.BinaryWriter.CreateForType<IDisposable>(filename);//thanks kethane SVN :) https://mmi-kethane-plugin.googlecode.com/svn-history/r2/trunk/Controller.cs
-            //screenWriter.Write(bytes);
-            //screenWriter.Close();
-//KSP.IO.File.WriteAllText<MuMechJebPod2>(KSP.IO.File.ReadAllText<MuMechJebPod2>(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft"), KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft");
-//System.IO.File.Copy(KSPUtil.ApplicationRootPath + "Parts/mumech_MechJebPod2/default.craft", KSPUtil.ApplicationRootPath + "Ships/__mechjebpod_tmp.craft", true);
 
             Debug.Log(string.Format("KVV: Took screenshot to: {0}", filename));
         }
