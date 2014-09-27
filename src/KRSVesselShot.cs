@@ -20,8 +20,8 @@ namespace KronalUtils
 
         private Camera[] cameras;
         private RenderTexture rt;
-        private int maxWidth = 9999;
-        private int maxHeight = 5000;
+        private int maxWidth = 4096;
+        private int maxHeight = 4096;
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
@@ -222,8 +222,28 @@ namespace KronalUtils
             if (imageWidth <= 0 || imageHeight <= 0)
             {
                 this.Camera.aspect = width / height;
-                imageHeight = (int)Mathf.Clamp(100f * height, 0f, Math.Min(maxHeight, maxWidth / this.Camera.aspect));
-                imageWidth = (int)(imageHeight * this.Camera.aspect);
+
+                /*
+                 * BOM: Looks right to me 
+                 *      Verified: http://math.stackexchange.com/questions/180804/how-to-get-the-aspect-ratio-of-an-image
+                 * 
+                 * Deckblad : Trying to lock all renders to a nice beefy size. 
+                 * My code will always use the largest image to fit within 5000x5000px as defined above in maxWidth / maxHeight
+                 * Please double-check my math. It was late...
+
+                    imageHeight = (int)Mathf.Clamp(100f * height, 0f, Math.Min(maxHeight, maxWidth / this.Camera.aspect));
+                    imageWidth = (int)(imageHeight * this.Camera.aspect);
+                */
+                if (height >= width)
+                {
+                    imageHeight = (int)maxHeight;
+                    imageWidth = (int)(imageHeight * this.Camera.aspect);
+                }
+                else
+                {
+                    imageWidth = (int)maxWidth;
+                    imageHeight = (int)(imageWidth / this.Camera.aspect);
+                }
             }
             else
             {

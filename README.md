@@ -14,11 +14,24 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
+#### v0.0.3 - mrBlaQ
+* GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
+  * Fixed white lines issue by restricting image size to 4096px (max any dimension)
+  * Made all renders Jump Up to 4096px.  This creates higher quality renders with smaller craft.
+* Nils Daumann [\(Git Slin\)](https://github.com/Slin/) was kind enough to change the license on the fxaa shader. 
+* To Install:
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL & KronalUtils/fxaa shader changed but be sure replace everything)
+  * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+
 #### v0.0.2 - Dat-U-Eye
 
 * Change Config Defaults
 * Changed button layouts and preview
-* [Git deckblad](https://github.com/deckblad) added support for [KAS Parts](https://github.com/KospY/KAS)
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) added support for [KAS Parts](https://github.com/KospY/KAS)
 * To Install:
   * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL is only changed file but be sure replace everything)
   * No Dependancies
