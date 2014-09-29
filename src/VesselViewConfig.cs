@@ -348,5 +348,4 @@ namespace KronalUtils
             }
         }
     }
-
 }
