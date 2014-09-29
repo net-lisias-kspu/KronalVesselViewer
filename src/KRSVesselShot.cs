@@ -40,6 +40,7 @@ namespace KronalUtils
                 this.Camera = this.cameras[value ? 0 : 1];//if setting to true use the first camera (which is ortho camera). if false use the non-ortho
             }
         }
+
         internal VesselViewConfig Config { get; private set; }
         internal IShipconstruct Ship
         {
