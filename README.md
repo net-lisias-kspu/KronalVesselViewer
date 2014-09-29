@@ -14,6 +14,18 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
+#### v0.0.4a - Pitch Perfect
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) combined efforts:
+  * Shadow Rendering
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
+  * Adjusted Camera Positioning
+* To Install:
+  * Download Source Code (Ignore Zip)
+  * Build with required KSP DLLs
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+  * Build in from C#
+  * Install Normally (or use a batch script)
+
 #### v0.0.3 - mrBlaQ
 * GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
