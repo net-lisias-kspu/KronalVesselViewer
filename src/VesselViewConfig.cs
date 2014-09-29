@@ -117,6 +117,11 @@ namespace KronalUtils
                     Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
                     }
+                },
+                new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
+                    Options = {
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
+                    }
                 }
             };
         }
@@ -388,5 +393,4 @@ Debug.Log(string.Format("KVV: Execute is still safe?!"));
             }
         }
     }
-
 }
