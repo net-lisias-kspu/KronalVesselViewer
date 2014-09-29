@@ -19,6 +19,7 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
   * Shadow Rendering
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
   * Adjusted Camera Positioning
+  * Improved Camera Controls
 * To Install:
   * Download Source Code (Ignore Zip)
   * Build with required KSP DLLs

@@ -33,7 +33,7 @@ namespace KronalUtils
         public void Awake()
         {
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
-            string[] configAppend = {"Part Config"};
+            string[] configAppend = {"Offset Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             this.control.Config.onApply += ConfigApplied;
@@ -174,7 +174,7 @@ namespace KronalUtils
                 this.guiStyleButtonAlert.alignment = TextAnchor.MiddleCenter;
             }
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Explode"))
+            if (GUILayout.Button("Offset View"))
             {
                 this.control.Explode();
             }
