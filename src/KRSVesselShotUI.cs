@@ -194,24 +194,32 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Ͼ"))
+            if (GUILayout.RepeatButton("ᴖ"))
             {
-                this.control.direction = Quaternion.AngleAxis(-45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(-0.2f, this.control.Camera.transform.right) * this.control.direction;
+            }
+            if (GUILayout.RepeatButton("ϲ"))
+            {
+                this.control.direction = Quaternion.AngleAxis(-1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
             }
             if (GUILayout.RepeatButton("▲"))
             {
                 this.control.position.y -= 0.1f;
             }
-            if (GUILayout.Button("Ͽ")) //↶
+            if (GUILayout.RepeatButton("ᴐ")) //↶
             {
-                this.control.direction = Quaternion.AngleAxis(45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
             }
-            if (GUILayout.RepeatButton("ʘ"))
+            if (GUILayout.RepeatButton("+"))
             {
                 this.control.position.z += 0.1f;
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
+            if (GUILayout.RepeatButton("ᴗ"))
+            {
+                this.control.direction = Quaternion.AngleAxis(0.2f, this.control.Camera.transform.right) * this.control.direction;
+            }
             if (GUILayout.RepeatButton("◄"))
             {
                 this.control.position.x += 0.1f;
@@ -224,7 +232,7 @@ namespace KronalUtils
             {
                 this.control.position.x -= 0.1f;
             }
-            if (GUILayout.RepeatButton("Ø"))
+            if (GUILayout.RepeatButton("-"))
             {
                 this.control.position.z -= 0.1f;
             }

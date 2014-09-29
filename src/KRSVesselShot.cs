@@ -25,7 +25,9 @@ namespace KronalUtils
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
+        internal Vector3 originalUp = Vector3.up; // initialized with default "up" used to rotate Camera around ship axis.
         internal Vector3 position;
+        internal float storedShadowDistance; // keeps original shadow distance. Used to toggle shadows off during rendering.
         internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
         internal bool Orthographic
         {
@@ -95,6 +97,7 @@ namespace KronalUtils
             GameEvents.onPartRemove.Remove(PartRemoved);
         }
 
+        // Sets up Orthographic and Perspective camera.
         private void SetupCameras()
         {
             this.cameras = new Camera[2];
@@ -190,8 +193,10 @@ namespace KronalUtils
 
         public void GenTexture(Vector3 direction, int imageWidth = -1, int imageHeight = -1)
         {
+            // Default -1 means we're saving.
             var minusDir = -direction;
 
+            this.Camera.farClipPlane = 10000f; // Deckblad: force clipping value to something "big." It could be derived.
             this.Camera.clearFlags = CameraClearFlags.SolidColor;
             this.Camera.backgroundColor = new Color(1f, 1f, 1f, 0.0f);
             this.Camera.transform.position = this.shipBounds.center;
@@ -205,35 +210,21 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
-            float positionOffset = 0f;
+            // Deckblad: Movement and rotation now the same for Orthographic and Perspective.
+            float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f;
+            this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
+
             if (this.Orthographic)
             {
-                this.Camera.transform.Translate(Vector3.Scale(this.position, new Vector3(1f, 1f, 0f)));
                 this.Camera.orthographicSize = (height - this.position.z) / 2f;
-                //positionOffset = 0f;
             }
-            else
-            {
-                positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f;
-                this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
-            }
-            this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth;
 
+            // If we're saving, use full resolution.
             if (imageWidth <= 0 || imageHeight <= 0)
             {
+                // Constrain image to max size with respect to aspect
                 this.Camera.aspect = width / height;
 
-                /*
-                 * BOM: Looks right to me 
-                 *      Verified: http://math.stackexchange.com/questions/180804/how-to-get-the-aspect-ratio-of-an-image
-                 * 
-                 * Deckblad : Trying to lock all renders to a nice beefy size. 
-                 * My code will always use the largest image to fit within 5000x5000px as defined above in maxWidth / maxHeight
-                 * Please double-check my math. It was late...
-
-                    imageHeight = (int)Mathf.Clamp(100f * height, 0f, Math.Min(maxHeight, maxWidth / this.Camera.aspect));
-                    imageWidth = (int)(imageHeight * this.Camera.aspect);
-                */
                 if (height >= width)
                 {
                     imageHeight = (int)maxHeight;
@@ -327,7 +318,15 @@ namespace KronalUtils
             }
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
+
+            // I'm thinking to turn shadows off here...
+            storedShadowDistance = QualitySettings.shadowDistance;
+            QualitySettings.shadowDistance = 0;
+
             GenTexture(dir, width, height);
+
+            // And turning shadows back on here.
+            QualitySettings.shadowDistance = storedShadowDistance;
             
         }
 

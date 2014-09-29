@@ -117,6 +117,11 @@ namespace KronalUtils
                     Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
                     }
+                },
+                new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
+                    Options = {
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
+                    }
                 }
             };
         }
