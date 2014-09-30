@@ -82,38 +82,43 @@ namespace KronalUtils
             this.Config = new List<VesselElementViewOptions>() {
                 new VesselElementViewOptions("Stack Decouplers/Separators", CanApplyIfModule("ModuleDecouple")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, StackDecouplerExplode, true, 1f),
+                        new VesselElementViewOption("Offset", true, true, StackDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Radial Decouplers/Separators", CanApplyIfModule("ModuleAnchoredDecoupler")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, RadialDecouplerExplode, true, 1f),
+                        new VesselElementViewOption("Offset", true, true, RadialDecouplerExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Docking Ports", CanApplyIfModule("ModuleDockingNode")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, DockingPortExplode, true, 1f),
+                        new VesselElementViewOption("Offset", true, true, DockingPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Engine Fairings", CanApplyIfModule("ModuleJettison")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, EngineFairingExplode, true, 1f),
+                        new VesselElementViewOption("Offset", true, true, EngineFairingExplode, true, 1f),
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, false),
                     }
                 },
                 new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, KASConnectorPortExplode, true, 1f),
+                        new VesselElementViewOption("Offset", true, true, KASConnectorPortExplode, true, 1f),
                     }
                 },
                 new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
                     Options = {
-                        new VesselElementViewOption("Explode", true, true, ProcFairingExplode, false, 1f),
+                        new VesselElementViewOption("Offset", true, true, ProcFairingExplode, false, 1f),
                         new VesselElementViewOption("Hide", true, false, PartHide, false),
                         new VesselElementViewOption("Hide front half", true, false, ProcFairingHide, false),
                     }
                 },
                 new VesselElementViewOptions("Struts", CanApplyIfType("StrutConnector")) {
+                    Options = {
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
+                    }
+                },
+                new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
                     Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
                     }
@@ -343,5 +348,4 @@ namespace KronalUtils
             }
         }
     }
-
 }

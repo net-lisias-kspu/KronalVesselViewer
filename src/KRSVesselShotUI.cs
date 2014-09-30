@@ -33,7 +33,7 @@ namespace KronalUtils
         public void Awake()
         {
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
-            string[] configAppend = {"Part Config"};
+            string[] configAppend = {"Offset Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             this.control.Config.onApply += ConfigApplied;
@@ -174,7 +174,7 @@ namespace KronalUtils
                 this.guiStyleButtonAlert.alignment = TextAnchor.MiddleCenter;
             }
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Explode"))
+            if (GUILayout.Button("Offset View"))
             {
                 this.control.Explode();
             }
@@ -194,51 +194,69 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Ͼ"))
+            if (GUILayout.RepeatButton("ᴖ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(-45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(-0.2f, this.control.Camera.transform.right) * this.control.direction;
             }
-            if (GUILayout.RepeatButton("▲"))
+            if (GUILayout.RepeatButton("ϲ", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.direction = Quaternion.AngleAxis(-1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
+            }
+            if (GUILayout.RepeatButton("▲", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.y -= 0.1f;
             }
-            if (GUILayout.Button("Ͽ")) //↶
+            if (GUILayout.RepeatButton("ᴐ", GUILayout.Width(34) , GUILayout.Height(34))) //↶
             {
-                this.control.direction = Quaternion.AngleAxis(45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
             }
-            if (GUILayout.RepeatButton("ʘ"))
+            if (GUILayout.RepeatButton("+", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.z += 0.1f;
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.RepeatButton("◄"))
-            {
-                this.control.position.x += 0.1f;
-            }
-            if (GUILayout.RepeatButton("▼"))
-            {
-                this.control.position.y += 0.1f;
-            }
-            if (GUILayout.RepeatButton("►"))
-            {
-                this.control.position.x -= 0.1f;
-            }
-            if (GUILayout.RepeatButton("Ø"))
-            {
-                this.control.position.z -= 0.1f;
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.Width(34), GUILayout.ExpandHeight(true)))
             {
                 this.control.direction = Vector3.forward;
                 this.control.position = Vector3.zero;
             }
             GUILayout.EndHorizontal();
-
             GUILayout.BeginHorizontal();
-            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic");
+            if (GUILayout.RepeatButton("ᴗ", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.direction = Quaternion.AngleAxis(0.2f, this.control.Camera.transform.right) * this.control.direction;
+            }
+            if (GUILayout.RepeatButton("◄", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x += 0.1f;
+            }
+            if (GUILayout.RepeatButton("▼", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.y += 0.1f;
+            }
+            if (GUILayout.RepeatButton("►", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x -= 0.1f;
+            }
+            if (GUILayout.RepeatButton("-", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.z -= 0.1f;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+
+
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic", GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+            this.control.uiFloatVals["shadowVal"] = 0f;
+            GUILayout.Label("Shadow", GUILayout.Width(66f));
+            this.control.uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["shadowValPercent"], 0f, 100f);
+            GUILayout.Label(this.control.uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));//GUILayout.Width(50f),
+            this.control.uiFloatVals["shadowVal"] = this.control.uiFloatVals["shadowValPercent"] * 1000f;//1000 is the max shadow val.  Looks like it takes a float so thats the max? 
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -266,6 +284,34 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
             for (var i = 0; i < this.control.Effects[name].PropertyCount; ++i)
             {
+
+                if (name == "Blue Print" && !this.control.Effects[name].Enabled)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Background (RGB)", GUILayout.Width(74f));
+                    GUILayout.BeginVertical();
+                    Color newVal = new Color(1f,1f,1f,1f);
+                    newVal.r = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgR"], 0f, 1f);
+                    newVal.g = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgG"], 0f, 1f);
+                    newVal.b = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgB"], 0f, 1f);
+                    this.control.uiFloatVals["bgR"] = newVal.r;
+                    this.control.uiFloatVals["bgG"] = newVal.g;
+                    this.control.uiFloatVals["bgB"] = newVal.b;
+                    GUILayout.EndVertical();
+                    GUILayout.BeginVertical();
+                    GUILayout.Label(this.control.uiFloatVals["bgR"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgG"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgB"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.EndVertical();
+                    if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+                    {
+                        this.control.uiFloatVals["bgR"] = this.control.uiFloatVals["bgR_"];
+                        this.control.uiFloatVals["bgG"] = this.control.uiFloatVals["bgG_"];
+                        this.control.uiFloatVals["bgB"] = this.control.uiFloatVals["bgB_"];
+                    }
+                    GUILayout.EndHorizontal();
+                    break;
+                }
                 var prop = this.control.Effects[name][i];
                 prop.Match(
                     IfFloat: (p) =>

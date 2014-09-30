@@ -1,4 +1,4 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
@@ -13,6 +13,26 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ==========================================
 
 ### Bigorangemachine's Fork
+
+#### v0.0.4a - Pitch Perfect
+* Background colour sliders (white is no longer the only background colour render option)
+* Blue Print Shader is now disabled by default
+  * Blue Print was causing the issue with the white rendering lines
+* UI Adjustments
+  * Bigger buttons
+  * Moved Orthographic Button
+  * Changed 'Exploded' references to 'Offset'
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) combined efforts:
+  * Shadow Rendering & UI
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
+  * Adjusted Camera Positioning
+  * Improved Camera Controls
+* To Install:
+  * Download Source Code (Ignore Zip)
+  * Build with required KSP DLLs
+  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+  * Build in from C#
+  * Install Normally (or use a batch script)
 
 #### v0.0.3 - mrBlaQ
 * GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
