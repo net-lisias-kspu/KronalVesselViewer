@@ -15,7 +15,10 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.4a - Pitch Perfect
-* UI Adjustments (Bigger buttons, moved Orthographic Button and Changed 'Exploded' references to 'Offset')
+* UI Adjustments
+  * Bigger buttons
+  * Moved Orthographic Button
+  * Changed 'Exploded' references to 'Offset'
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) combined efforts:
   * Shadow Rendering & UI
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
