@@ -15,6 +15,9 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.4a - Pitch Perfect
+* Background colour sliders (white is no longer the only background colour render option)
+* Blue Print Shader is now disabled by default
+  * Blue Print was causing the issue with the white rendering lines
 * UI Adjustments
   * Bigger buttons
   * Moved Orthographic Button

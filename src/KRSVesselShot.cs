@@ -17,7 +17,10 @@ namespace KronalUtils
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
         public readonly IDictionary<string, ShaderMaterial> Effects;
-
+        public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { { "shadowVal", 0f }, { "shadowValPercent", 0f },
+            {"bgR",1f},{"bgG",1f},{"bgB",1f},{"bgA",1f},//RGBA
+            {"bgR_",0f},{"bgG_",0.07f},{"bgB_",0.11f},{"bgA_",1f}//RGBA defaults //00406E 0,64,110 -> reduced due to color adjust shader
+        };
         private Camera[] cameras;
         private RenderTexture rt;
         private int maxWidth = 4096;
@@ -85,6 +88,10 @@ namespace KronalUtils
                 {"Blue Print", MaterialBluePrint},
                 {"FXAA", MaterialFXAA}
             };
+            this.Effects["Blue Print"].Enabled = false;
+            uiFloatVals["bgR"]=uiFloatVals["bgR_"];
+            uiFloatVals["bgG"]=uiFloatVals["bgG_"];
+            uiFloatVals["bgB"]=uiFloatVals["bgB_"];
             LoadShaders();
             UpdateShipBounds();
 
@@ -199,7 +206,16 @@ namespace KronalUtils
 
             this.Camera.farClipPlane = 10000f; // Deckblad: force clipping value to something "big." It could be derived.
             this.Camera.clearFlags = CameraClearFlags.SolidColor;
-            this.Camera.backgroundColor = new Color(1f, 1f, 1f, 0.0f);
+            if(this.Effects["Blue Print"].Enabled){
+                this.Camera.backgroundColor = new Color(1f, 1f, 1f, 0.0f);}
+            else{
+                this.Camera.backgroundColor = new Color(uiFloatVals["bgR"], uiFloatVals["bgG"], uiFloatVals["bgB"], uiFloatVals["bgA"]);
+            }
+
+
+
+
+            
             this.Camera.transform.position = this.shipBounds.center;
             this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
             this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane);
@@ -310,7 +326,7 @@ namespace KronalUtils
 
         }
 
-        public void Update(float shadow = 0, int width = -1, int height = -1)
+        public void Update(int width = -1, int height = -1)
         {
             if (!EditorLogic.startPod || this.Ship == null)
             {
@@ -321,7 +337,7 @@ namespace KronalUtils
 
             // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;
-            QualitySettings.shadowDistance = (shadow<0f?0f:shadow);
+            QualitySettings.shadowDistance = (this.uiFloatVals["shadowVal"] < 0f ? 0f : this.uiFloatVals["shadowVal"]);
             
             GenTexture(dir, width, height);
 

@@ -25,8 +25,6 @@ namespace KronalUtils
         private bool visible;
         private KRSEditorAxis axis;
 
-        public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { { "shadowVal", 0f }, { "shadowValPercent", 0f } };
-
         private bool IsOnEditor()
         {
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
@@ -86,7 +84,7 @@ namespace KronalUtils
         {
             if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f)
             {
-                this.control.Update((float)this.uiFloatVals["shadowVal"], (int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
+                this.control.Update((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
         }
         bool isMouseOver()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
@@ -252,11 +250,11 @@ namespace KronalUtils
             this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic", GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-            uiFloatVals["shadowVal"] = 0f;
+            this.control.uiFloatVals["shadowVal"] = 0f;
             GUILayout.Label("Shadow", GUILayout.Width(66f));
-            uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(uiFloatVals["shadowValPercent"], 0f, 100f);
-            GUILayout.Label(uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));//GUILayout.Width(50f),
-            uiFloatVals["shadowVal"] = uiFloatVals["shadowValPercent"] * 1000f;//1000 is the max shadow val.  Looks like it takes a float so thats the max? 
+            this.control.uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["shadowValPercent"], 0f, 100f);
+            GUILayout.Label(this.control.uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));//GUILayout.Width(50f),
+            this.control.uiFloatVals["shadowVal"] = this.control.uiFloatVals["shadowValPercent"] * 1000f;//1000 is the max shadow val.  Looks like it takes a float so thats the max? 
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
@@ -286,6 +284,34 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
             for (var i = 0; i < this.control.Effects[name].PropertyCount; ++i)
             {
+
+                if (name == "Blue Print" && !this.control.Effects[name].Enabled)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Background (RGB)", GUILayout.Width(74f));
+                    GUILayout.BeginVertical();
+                    Color newVal = new Color(1f,1f,1f,1f);
+                    newVal.r = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgR"], 0f, 1f);
+                    newVal.g = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgG"], 0f, 1f);
+                    newVal.b = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgB"], 0f, 1f);
+                    this.control.uiFloatVals["bgR"] = newVal.r;
+                    this.control.uiFloatVals["bgG"] = newVal.g;
+                    this.control.uiFloatVals["bgB"] = newVal.b;
+                    GUILayout.EndVertical();
+                    GUILayout.BeginVertical();
+                    GUILayout.Label(this.control.uiFloatVals["bgR"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgG"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgB"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.EndVertical();
+                    if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+                    {
+                        this.control.uiFloatVals["bgR"] = this.control.uiFloatVals["bgR_"];
+                        this.control.uiFloatVals["bgG"] = this.control.uiFloatVals["bgG_"];
+                        this.control.uiFloatVals["bgB"] = this.control.uiFloatVals["bgB_"];
+                    }
+                    GUILayout.EndHorizontal();
+                    break;
+                }
                 var prop = this.control.Effects[name][i];
                 prop.Match(
                     IfFloat: (p) =>
