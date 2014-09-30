@@ -310,7 +310,7 @@ namespace KronalUtils
 
         }
 
-        public void Update(int width = -1, int height = -1)
+        public void Update(float shadow = 0, int width = -1, int height = -1)
         {
             if (!EditorLogic.startPod || this.Ship == null)
             {
@@ -321,8 +321,8 @@ namespace KronalUtils
 
             // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;
-            QualitySettings.shadowDistance = 0;
-
+            QualitySettings.shadowDistance = (shadow<0f?0f:shadow);
+            
             GenTexture(dir, width, height);
 
             // And turning shadows back on here.

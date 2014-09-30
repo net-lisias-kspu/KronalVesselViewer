@@ -25,6 +25,8 @@ namespace KronalUtils
         private bool visible;
         private KRSEditorAxis axis;
 
+        public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { { "shadowVal", 0f }, { "shadowValPercent", 0f } };
+
         private bool IsOnEditor()
         {
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
@@ -84,7 +86,7 @@ namespace KronalUtils
         {
             if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f)
             {
-                this.control.Update((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
+                this.control.Update((float)this.uiFloatVals["shadowVal"], (int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
         }
         bool isMouseOver()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
@@ -194,59 +196,69 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            if (GUILayout.RepeatButton("ᴖ"))
+            if (GUILayout.RepeatButton("ᴖ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.direction = Quaternion.AngleAxis(-0.2f, this.control.Camera.transform.right) * this.control.direction;
             }
-            if (GUILayout.RepeatButton("ϲ"))
+            if (GUILayout.RepeatButton("ϲ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.direction = Quaternion.AngleAxis(-1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
             }
-            if (GUILayout.RepeatButton("▲"))
+            if (GUILayout.RepeatButton("▲", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.y -= 0.1f;
             }
-            if (GUILayout.RepeatButton("ᴐ")) //↶
+            if (GUILayout.RepeatButton("ᴐ", GUILayout.Width(34) , GUILayout.Height(34))) //↶
             {
                 this.control.direction = Quaternion.AngleAxis(1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
             }
-            if (GUILayout.RepeatButton("+"))
+            if (GUILayout.RepeatButton("+", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.z += 0.1f;
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.RepeatButton("ᴗ"))
-            {
-                this.control.direction = Quaternion.AngleAxis(0.2f, this.control.Camera.transform.right) * this.control.direction;
-            }
-            if (GUILayout.RepeatButton("◄"))
-            {
-                this.control.position.x += 0.1f;
-            }
-            if (GUILayout.RepeatButton("▼"))
-            {
-                this.control.position.y += 0.1f;
-            }
-            if (GUILayout.RepeatButton("►"))
-            {
-                this.control.position.x -= 0.1f;
-            }
-            if (GUILayout.RepeatButton("-"))
-            {
-                this.control.position.z -= 0.1f;
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.Width(34), GUILayout.ExpandHeight(true)))
             {
                 this.control.direction = Vector3.forward;
                 this.control.position = Vector3.zero;
             }
             GUILayout.EndHorizontal();
-
             GUILayout.BeginHorizontal();
-            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic");
+            if (GUILayout.RepeatButton("ᴗ", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.direction = Quaternion.AngleAxis(0.2f, this.control.Camera.transform.right) * this.control.direction;
+            }
+            if (GUILayout.RepeatButton("◄", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x += 0.1f;
+            }
+            if (GUILayout.RepeatButton("▼", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.y += 0.1f;
+            }
+            if (GUILayout.RepeatButton("►", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x -= 0.1f;
+            }
+            if (GUILayout.RepeatButton("-", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.z -= 0.1f;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+
+
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic", GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+            uiFloatVals["shadowVal"] = 0f;
+            GUILayout.Label("Shadow", GUILayout.Width(66f));
+            uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(uiFloatVals["shadowValPercent"], 0f, 100f);
+            GUILayout.Label(uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));//GUILayout.Width(50f),
+            uiFloatVals["shadowVal"] = uiFloatVals["shadowValPercent"] * 1000f;//1000 is the max shadow val.  Looks like it takes a float so thats the max? 
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
