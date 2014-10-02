@@ -15,18 +15,21 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.4a - Pitch Perfect
-* Background colour sliders (white is no longer the only background colour render option)
+* Background colour sliders (white is no longer the only background colour render option) located under 'Blue Print'
 * Blue Print Shader is now disabled by default
-  * Blue Print was causing the issue with the white rendering lines
+  * 'Blue Print shader' was causing the issue with the white rendering lines and off colouring in the bottom left corner
+  * Background colour controls are now available under 'Blue Print' which will eventually become 'Background' or 'Canvas'
 * UI Adjustments
   * Bigger buttons
   * Moved Orthographic Button
   * Changed 'Exploded' references to 'Offset'
+  * Image quality can now be controlled with a dial
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) combined efforts:
   * Shadow Rendering & UI
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
   * Adjusted Camera Positioning
   * Improved Camera Controls
+  * Part Option for Clamps
 * To Install:
   * Download Source Code (Ignore Zip)
   * Build with required KSP DLLs
