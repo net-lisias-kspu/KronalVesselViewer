@@ -15,8 +15,6 @@ namespace KronalUtils
         private Rect windowSize;
         private Vector2 windowScrollPos;
         private int tabCurrent;//almost obsolete
-        //private string[] tabNames;//obsolete
-        //private Action[] tabGUI;//obsolete
         private int shaderTabCurrent;
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
@@ -200,7 +198,6 @@ namespace KronalUtils
             }
             if (GUILayout.RepeatButton("ϲ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                //this.control.direction = Quaternion.AngleAxis(-1f, this.control.vehicleAxis) * this.control.direction; // move around ship's axis instead of camera
                 this.control.RotateShip(-1f);
             }
             if (GUILayout.RepeatButton("▲", GUILayout.Width(34) , GUILayout.Height(34)))
@@ -209,7 +206,6 @@ namespace KronalUtils
             }
             if (GUILayout.RepeatButton("ᴐ", GUILayout.Width(34) , GUILayout.Height(34))) //↶
             {
-                //this.control.direction = Quaternion.AngleAxis(1f, this.control.vehicleAxis) * this.control.direction; // move around ship's axis instead of camera
                 this.control.RotateShip(1f);
             }
             if (GUILayout.RepeatButton("+", GUILayout.Width(34) , GUILayout.Height(34)))
@@ -383,7 +379,7 @@ namespace KronalUtils
             var texture = this.control.Texture();
             if (texture)
             {
-                GUI.DrawTexture(this.orthoViewRect, texture, ScaleMode.ScaleToFit, false); // ALPHA BLENDING?!
+                GUI.DrawTexture(this.orthoViewRect, texture, ScaleMode.ScaleToFit, false); // ALPHA BLENDING?! HEY HEY
             }
         }
 

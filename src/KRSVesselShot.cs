@@ -28,7 +28,6 @@ namespace KronalUtils
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
-        internal Vector3 vehicleAxis = Vector3.up; // store axis of vehicle to rotate around
         internal Vector3 position;
         internal float storedShadowDistance; // keeps original shadow distance. Used to toggle shadows off during rendering.
         internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
@@ -121,9 +120,9 @@ namespace KronalUtils
             this.Camera = this.cameras[0];
         }
 
+        // Different rotations for SPH and VAB
         public void RotateShip(float degrees)
         {
-            
             Vector3 rotateAxis;
             
             if (HighLogic.LoadedScene == GameScenes.SPH)
@@ -136,11 +135,7 @@ namespace KronalUtils
                 Debug.Log(string.Format("Rotating in VAB: {0}", degrees));
                 rotateAxis = EditorLogic.startPod.transform.up;
             }
-            
-            //this.direction = Quaternion.AngleAxis(degrees, rotateAxis) * this.direction;
-            // Vector3.forward works for neither.
-            // EditorLogic.startPod.transform.forward broke in VAB
-            Debug.Log(String.Format("vehicleAxis: {0}", vehicleAxis));
+
             this.direction = Quaternion.AngleAxis(degrees, rotateAxis) * this.direction;
         }        
 
@@ -195,7 +190,6 @@ namespace KronalUtils
         {
             if ((this.Ship != null) && (this.Ship.Parts.Count > 0))
             {
-                this.vehicleAxis = this.Ship.Parts[0].transform.up;
                 this.shipBounds = CalcShipBounds();
             }
             else
@@ -225,23 +219,17 @@ namespace KronalUtils
 
         public void GenTexture(Vector3 direction, int imageWidth = -1, int imageHeight = -1)
         {
-            // Default -1 means we're saving.
             var minusDir = -direction;
-            Debug.Log(string.Format("MinusDir: {0}", minusDir));
-
-            this.Camera.farClipPlane = 100f; // Deckblad: force clipping value to something "big." It could be derived.
             this.Camera.clearFlags = CameraClearFlags.SolidColor;
             if(this.Effects["Blue Print"].Enabled){
                 this.Camera.backgroundColor = new Color(1f, 1f, 1f, 0.0f);}
             else{
                 this.Camera.backgroundColor = new Color(uiFloatVals["bgR"], uiFloatVals["bgG"], uiFloatVals["bgB"], uiFloatVals["bgA"]);
             }
-            
+
             this.Camera.transform.position = this.shipBounds.center;
-            // default this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
-            
-            // So this just gets the horizon right before we move the camera around...
-            
+
+            // This sets the horizon before the camera looks to vehicle center.
             if (HighLogic.LoadedScene == GameScenes.SPH)
             {
                 this.Camera.transform.rotation = Quaternion.AngleAxis(90, Vector3.right);
@@ -250,14 +238,14 @@ namespace KronalUtils
             {
                 this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.right);
             }
+            // this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up); // original 
 
-            Debug.Log(String.Format("nearClipPlane: {0}: ", this.Camera.nearClipPlane));
-            // So this is what gives us the angle on the thing we're viewing.
-            //default this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane);
+            // Apply angle Vector to camera.
             this.Camera.transform.Translate(minusDir * this.Camera.nearClipPlane);
+            // this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane); // original 
+            // Deckblad: There was a lot of math here when all we needed to do is establish the rotation of the camera.
 
-            //nearClipPlane might invert when minusDir is behind? meh?
-            //this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents));
+            // Face camera to vehicle.
             this.Camera.transform.LookAt(this.shipBounds.center);
 
             var tangent = this.Camera.transform.up;
@@ -265,35 +253,27 @@ namespace KronalUtils
             var height = Vector3.Scale(tangent, this.shipBounds.size).magnitude;
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
-            Debug.Log(String.Format("height: {0}: ", height));
-            Debug.Log(String.Format("width: {0}: ", width));
-            Debug.Log(String.Format("depth: {0}: ", depth));
 
-            var maxDimension = Math.Max(height, Math.Max(width, depth));
-
-            Debug.Log(String.Format("this.shipBounds.size.magnitude: {0}: ", this.shipBounds.size.magnitude));
-
-            // Deckblad: Translation
-            // default float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f;
-            // use extent instead of height
-            // note quite float positionOffset = (maxDimension - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
+            // Find distance from vehicle.
             float positionOffset = (this.shipBounds.size.magnitude - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
-            Debug.Log(String.Format("positionOffset: {0}: ", positionOffset));
+            // float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f; // original 
+            // Use magnitude of bounds instead of height and remove vehicle bounds depth for uniform distance from vehicle. Height and depth of vehicle change in relation to the camera as we move around the vehicle.
 
+            // Translate and Zoom camera
             this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
 
+            // Get distance from camera to ship. Apply to farClipPlane
             float distanceToShip = Vector3.Distance(this.Camera.transform.position, this.shipBounds.center);
-            Debug.Log(String.Format("distanceToShip: {0}: ", distanceToShip));
 
-            //this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth;
+            // Set far clip plane to just past size of vehicle.
             this.Camera.farClipPlane = distanceToShip + positionOffset + this.Camera.nearClipPlane;
-            Debug.Log(String.Format("farClipPlane: {0}: ", this.Camera.farClipPlane));
-            // This kinda worked? float positionOffset = 30f;
+            // this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth; // original
             
             if (this.Orthographic)
             {
-                //this.Camera.orthographicSize = (height - this.position.z) / 2f;
                 this.Camera.orthographicSize = (this.shipBounds.size.magnitude - this.position.z) / 2f;
+                // this.Camera.orthographicSize = (height - this.position.z) / 2f; // original
+                // Use ship size again instead of height.
             }
 
             // If we're saving, use full resolution.
