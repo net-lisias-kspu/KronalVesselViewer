@@ -17,14 +17,20 @@ namespace KronalUtils
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
         public readonly IDictionary<string, ShaderMaterial> Effects;
-        public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { { "shadowVal", 0f }, { "shadowValPercent", 0f },
+        public int calculatedWidth = 1;
+        public int calculatedHeight = 1;
+        public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { 
+            { "shadowVal", 0f }, { "shadowValPercent", 0f },
+            {"imgPercent",4f},
             {"bgR",1f},{"bgG",1f},{"bgB",1f},{"bgA",1f},//RGBA
             {"bgR_",0f},{"bgG_",0.07f},{"bgB_",0.11f},{"bgA_",1f}//RGBA defaults //00406E 0,64,110 -> reduced due to color adjust shader
         };
         private Camera[] cameras;
         private RenderTexture rt;
-        private int maxWidth = 4096;
-        private int maxHeight = 4096;
+        //private int maxWidth = 4096;
+        //private int maxHeight = 4096;
+        private int maxWidth = 1024;
+        private int maxHeight = 1024;
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
@@ -43,7 +49,6 @@ namespace KronalUtils
                 this.Camera = this.cameras[value ? 0 : 1];//if setting to true use the first camera (which is ortho camera). if false use the non-ortho
             }
         }
-
         internal VesselViewConfig Config { get; private set; }
         internal IShipconstruct Ship
         {
@@ -212,10 +217,6 @@ namespace KronalUtils
                 this.Camera.backgroundColor = new Color(uiFloatVals["bgR"], uiFloatVals["bgG"], uiFloatVals["bgB"], uiFloatVals["bgA"]);
             }
 
-
-
-
-            
             this.Camera.transform.position = this.shipBounds.center;
             this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
             this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane);
@@ -236,22 +237,27 @@ namespace KronalUtils
                 this.Camera.orthographicSize = (height - this.position.z) / 2f;
             }
 
+            bool isSaving = false;
+            float tmpAspect = width / height;
+            if (height >= width)
+            {
+                this.calculatedHeight = (int)maxHeight;
+                this.calculatedWidth = (int)(this.calculatedHeight * tmpAspect);
+            }
+            else
+            {
+                this.calculatedWidth = (int)maxWidth;
+                this.calculatedHeight = (int)(this.calculatedWidth / tmpAspect);
+            }
+
             // If we're saving, use full resolution.
             if (imageWidth <= 0 || imageHeight <= 0)
             {
                 // Constrain image to max size with respect to aspect
-                this.Camera.aspect = width / height;
-
-                if (height >= width)
-                {
-                    imageHeight = (int)maxHeight;
-                    imageWidth = (int)(imageHeight * this.Camera.aspect);
-                }
-                else
-                {
-                    imageWidth = (int)maxWidth;
-                    imageHeight = (int)(imageWidth / this.Camera.aspect);
-                }
+                isSaving = true;
+                this.Camera.aspect = tmpAspect;
+                imageWidth = this.calculatedWidth;
+                imageHeight = this.calculatedHeight;
             }
             else
             {
@@ -259,6 +265,16 @@ namespace KronalUtils
             }
             if (this.rt) RenderTexture.ReleaseTemporary(this.rt);
             this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+
+            int fileWidth = imageWidth;
+            int fileHeight = imageHeight;
+            if (isSaving)
+            {
+                fileWidth = (int)Math.Floor(imageWidth * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
+                fileHeight = (int)Math.Floor(imageHeight * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
+            }
+            this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            //this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
             this.Camera.targetTexture = this.rt;
             this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
             this.Camera.Render();
@@ -276,12 +292,23 @@ namespace KronalUtils
 
         private void SaveTexture(String fileName)
         {
+            //int fileWidth = (int)Math.Floor(this.rt.width * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
+            //int fileHeight = (int)Math.Floor(this.rt.height * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
+            int fileWidth = this.rt.width;
+            int fileHeight = this.rt.height;
+            Debug.Log(string.Format("KVV: SIZE: {0} x {1}", fileWidth, fileHeight));
+            //yield return new WaitForEndOfFrame();
             //TextureFormat.ARGB32 for transparent
-            Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
+            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
+            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, true);
+            Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
+            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.ARGB32, true);
+
+            //Texture2D savedTexture = this.rt as Texture2D;
             
             var saveRt = RenderTexture.active;
             RenderTexture.active = this.rt;
-            screenShot.ReadPixels(new Rect(0, 0, this.rt.width, this.rt.height), 0, 0);
+            screenShot.ReadPixels(new Rect(0, 0, fileWidth, fileHeight), 0, 0);
             screenShot.Apply();
             RenderTexture.active = saveRt;
             byte[] bytes = screenShot.EncodeToPNG();
@@ -346,7 +373,7 @@ namespace KronalUtils
             
         }
 
-        internal Texture Texture()
+        internal Texture Texture()//not used?!
         {
             if (!((EditorLogic.startPod) && (this.Ship != null)))
             {

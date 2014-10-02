@@ -24,7 +24,6 @@ namespace KronalUtils
         private ApplicationLauncherButton KVVButton;
         private bool visible;
         private KRSEditorAxis axis;
-
         private bool IsOnEditor()
         {
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
@@ -33,7 +32,7 @@ namespace KronalUtils
         public void Awake()
         {
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
-            string[] configAppend = {"Offset Config"};
+            string[] configAppend = {"Part Config"};
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             this.control.Config.onApply += ConfigApplied;
@@ -214,7 +213,7 @@ namespace KronalUtils
             {
                 this.control.position.z += 0.1f;
             }
-            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.Width(34), GUILayout.ExpandHeight(true)))
+            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.Width(34), GUILayout.Height(34)))
             {
                 this.control.direction = Vector3.forward;
                 this.control.position = Vector3.zero;
@@ -244,17 +243,26 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
 
-
             GUILayout.BeginVertical();
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
             this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic", GUILayout.ExpandWidth(true));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+            GUILayout.BeginHorizontal();
             this.control.uiFloatVals["shadowVal"] = 0f;
-            GUILayout.Label("Shadow", GUILayout.Width(66f));
-            this.control.uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["shadowValPercent"], 0f, 100f);
+            GUILayout.Label("Shadow", GUILayout.Width(46f));
+            GUILayout.Space(3f);
+            this.control.uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["shadowValPercent"], 0f, 300f, GUILayout.Width(153f));
+            GUILayout.Space(1f);
             GUILayout.Label(this.control.uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));//GUILayout.Width(50f),
             this.control.uiFloatVals["shadowVal"] = this.control.uiFloatVals["shadowValPercent"] * 1000f;//1000 is the max shadow val.  Looks like it takes a float so thats the max? 
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("File Quality", GUILayout.Width(68f));
+            GUILayout.Space(1f);
+            this.control.uiFloatVals["imgPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["imgPercent"]-1, 0f, 8f, GUILayout.Width(140f));
+            GUILayout.Space(1f);
+            String disW = Math.Floor((control.uiFloatVals["imgPercent"] +1) * control.calculatedWidth).ToString();
+            String disH = Math.Floor((control.uiFloatVals["imgPercent"] + 1) * control.calculatedHeight).ToString();
+            GUILayout.Label(String.Format("{0:0.#}", this.control.uiFloatVals["imgPercent"].ToString("F")) + "\n" + disW + " x " + disH, GUILayout.Width(110f));//GUILayout.Width(50f),
+            control.uiFloatVals["imgPercent"] = control.uiFloatVals["imgPercent"] + 1;
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
@@ -264,11 +272,7 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
             
             this.tabCurrent = 0;//used only in Update() be 0.  This will be removed later
-        }
-        private bool GUITabShaderIncExceeded()
-        {
-            if (this.shaderTabCurrent < this.control.Effects.Keys.ToArray<string>().Length) { return true; }//valid effect
-            return false;
+            //GUILayout.EndHorizontal();
         }
         private void GUITabShader(string name)
         {
@@ -278,6 +282,16 @@ namespace KronalUtils
                 GUITabConfig();
                 GUILayout.EndHorizontal();
                 return;
+            }
+            if (name == "Blue Print" && this.control.Effects[name].Enabled)
+            {
+                GUILayout.BeginHorizontal();
+                GUIStyle phaseNotice = new GUIStyle(GUI.skin.label);
+                phaseNotice.fontSize = 10;
+                phaseNotice.active.textColor = XKCDColors.BrightRed;
+                phaseNotice.normal.textColor = XKCDColors.BrightRed;
+                GUILayout.Label("**This feature will be phased out. Change Log: 0.0.4**", phaseNotice, GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
             }
             GUILayout.BeginHorizontal();
             this.control.Effects[name].Enabled = GUILayout.Toggle(this.control.Effects[name].Enabled, "Active");
