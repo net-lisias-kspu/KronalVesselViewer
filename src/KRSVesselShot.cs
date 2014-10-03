@@ -254,6 +254,9 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
+            width += this.Config.procFairingOffset; // get the distance of fairing offset
+            depth += this.Config.procFairingOffset; // for the farClipPlane
+
             // Find distance from vehicle.
             float positionOffset = (this.shipBounds.size.magnitude - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
             // float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f; // original 
@@ -266,14 +269,13 @@ namespace KronalUtils
             float distanceToShip = Vector3.Distance(this.Camera.transform.position, this.shipBounds.center);
 
             // Set far clip plane to just past size of vehicle.
-            this.Camera.farClipPlane = distanceToShip + positionOffset + this.Camera.nearClipPlane;
+            this.Camera.farClipPlane = distanceToShip + this.Camera.nearClipPlane + depth + 1; // 1 for the first rotation vector
             // this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth; // original
             
             if (this.Orthographic)
             {
-                this.Camera.orthographicSize = (this.shipBounds.size.magnitude - this.position.z) / 2f;
+                this.Camera.orthographicSize = (Math.Max(height, width) - this.position.z) / 2f; // Use larger of ship height or width.
                 // this.Camera.orthographicSize = (height - this.position.z) / 2f; // original
-                // Use ship size again instead of height.
             }
 
             // If we're saving, use full resolution.
@@ -375,8 +377,8 @@ namespace KronalUtils
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
 
-            Debug.Log(string.Format("Whats My direction: {0}", this.direction));
-            Debug.Log(string.Format("Whats My dir: {0}", dir));
+            //Debug.Log(string.Format("Whats My direction: {0}", this.direction));
+            //Debug.Log(string.Format("Whats My dir: {0}", dir));
 
             // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;
