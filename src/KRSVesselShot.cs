@@ -269,7 +269,7 @@ namespace KronalUtils
             float distanceToShip = Vector3.Distance(this.Camera.transform.position, this.shipBounds.center);
 
             // Set far clip plane to just past size of vehicle.
-            this.Camera.farClipPlane = distanceToShip + this.Camera.nearClipPlane + depth + 1; // 1 for the first rotation vector
+            this.Camera.farClipPlane = distanceToShip + this.Camera.nearClipPlane + depth * 2 + 1; // 1 for the first rotation vector
             // this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth; // original
             
             if (this.Orthographic)
