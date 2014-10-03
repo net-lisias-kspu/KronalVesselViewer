@@ -15,8 +15,6 @@ namespace KronalUtils
         private Rect windowSize;
         private Vector2 windowScrollPos;
         private int tabCurrent;//almost obsolete
-        private string[] tabNames;//obsolete
-        private Action[] tabGUI;//obsolete
         private int shaderTabCurrent;
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
@@ -195,11 +193,11 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             if (GUILayout.RepeatButton("ᴖ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(-0.2f, this.control.Camera.transform.right) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(-0.4f, this.control.Camera.transform.right) * this.control.direction;
             }
             if (GUILayout.RepeatButton("ϲ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(-1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
+                this.control.RotateShip(-1f);
             }
             if (GUILayout.RepeatButton("▲", GUILayout.Width(34) , GUILayout.Height(34)))
             {
@@ -207,7 +205,7 @@ namespace KronalUtils
             }
             if (GUILayout.RepeatButton("ᴐ", GUILayout.Width(34) , GUILayout.Height(34))) //↶
             {
-                this.control.direction = Quaternion.AngleAxis(1f, this.control.originalUp) * this.control.direction; // move around ship's axis instead of camera
+                this.control.RotateShip(1f);
             }
             if (GUILayout.RepeatButton("+", GUILayout.Width(34) , GUILayout.Height(34)))
             {
@@ -222,7 +220,7 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             if (GUILayout.RepeatButton("ᴗ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(0.2f, this.control.Camera.transform.right) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(0.4f, this.control.Camera.transform.right) * this.control.direction;
             }
             if (GUILayout.RepeatButton("◄", GUILayout.Width(34) , GUILayout.Height(34)))
             {
@@ -394,7 +392,7 @@ namespace KronalUtils
             var texture = this.control.Texture();
             if (texture)
             {
-                GUI.DrawTexture(this.orthoViewRect, texture, ScaleMode.ScaleToFit, false);
+                GUI.DrawTexture(this.orthoViewRect, texture, ScaleMode.ScaleToFit, false); // ALPHA BLENDING?! HEY HEY
             }
         }
 

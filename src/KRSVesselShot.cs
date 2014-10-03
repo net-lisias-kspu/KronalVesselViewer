@@ -34,7 +34,6 @@ namespace KronalUtils
         private Bounds shipBounds;
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
-        internal Vector3 originalUp = Vector3.up; // initialized with default "up" used to rotate Camera around ship axis.
         internal Vector3 position;
         internal float storedShadowDistance; // keeps original shadow distance. Used to toggle shadows off during rendering.
         internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
@@ -99,7 +98,7 @@ namespace KronalUtils
             uiFloatVals["bgB"]=uiFloatVals["bgB_"];
             LoadShaders();
             UpdateShipBounds();
-
+            
             GameEvents.onPartAttach.Add(PartAttached);
             GameEvents.onPartRemove.Add(PartRemoved);
         }
@@ -125,6 +124,25 @@ namespace KronalUtils
             this.cameras[1].cullingMask = this.cameras[0].cullingMask;
             this.Camera = this.cameras[0];
         }
+
+        // Different rotations for SPH and VAB
+        public void RotateShip(float degrees)
+        {
+            Vector3 rotateAxis;
+            
+            if (HighLogic.LoadedScene == GameScenes.SPH)
+            {
+                Debug.Log(string.Format("Rotating in SPH: {0}", degrees));
+                rotateAxis = EditorLogic.startPod.transform.forward;
+            }
+            else
+            {
+                Debug.Log(string.Format("Rotating in VAB: {0}", degrees));
+                rotateAxis = EditorLogic.startPod.transform.up;
+            }
+
+            this.direction = Quaternion.AngleAxis(degrees, rotateAxis) * this.direction;
+        }        
 
         private void LoadShaders()
         {
@@ -206,10 +224,7 @@ namespace KronalUtils
 
         public void GenTexture(Vector3 direction, int imageWidth = -1, int imageHeight = -1)
         {
-            // Default -1 means we're saving.
             var minusDir = -direction;
-
-            this.Camera.farClipPlane = 10000f; // Deckblad: force clipping value to something "big." It could be derived.
             this.Camera.clearFlags = CameraClearFlags.SolidColor;
             if(this.Effects["Blue Print"].Enabled){
                 this.Camera.backgroundColor = new Color(1f, 1f, 1f, 0.0f);}
@@ -218,8 +233,24 @@ namespace KronalUtils
             }
 
             this.Camera.transform.position = this.shipBounds.center;
-            this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
-            this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane);
+
+            // This sets the horizon before the camera looks to vehicle center.
+            if (HighLogic.LoadedScene == GameScenes.SPH)
+            {
+                this.Camera.transform.rotation = Quaternion.AngleAxis(90, Vector3.right);
+            }
+            else
+            {
+                this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.right);
+            }
+            // this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up); // original 
+
+            // Apply angle Vector to camera.
+            this.Camera.transform.Translate(minusDir * this.Camera.nearClipPlane);
+            // this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane); // original 
+            // Deckblad: There was a lot of math here when all we needed to do is establish the rotation of the camera.
+
+            // Face camera to vehicle.
             this.Camera.transform.LookAt(this.shipBounds.center);
 
             var tangent = this.Camera.transform.up;
@@ -228,13 +259,28 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
-            // Deckblad: Movement and rotation now the same for Orthographic and Perspective.
-            float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f;
+            width += this.Config.procFairingOffset; // get the distance of fairing offset
+            depth += this.Config.procFairingOffset; // for the farClipPlane
+
+            // Find distance from vehicle.
+            float positionOffset = (this.shipBounds.size.magnitude - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
+            // float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f; // original 
+            // Use magnitude of bounds instead of height and remove vehicle bounds depth for uniform distance from vehicle. Height and depth of vehicle change in relation to the camera as we move around the vehicle.
+
+            // Translate and Zoom camera
             this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
 
+            // Get distance from camera to ship. Apply to farClipPlane
+            float distanceToShip = Vector3.Distance(this.Camera.transform.position, this.shipBounds.center);
+
+            // Set far clip plane to just past size of vehicle.
+            this.Camera.farClipPlane = distanceToShip + this.Camera.nearClipPlane + depth * 2 + 1; // 1 for the first rotation vector
+            // this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth; // original
+            
             if (this.Orthographic)
             {
-                this.Camera.orthographicSize = (height - this.position.z) / 2f;
+                this.Camera.orthographicSize = (Math.Max(height, width) - this.position.z) / 2f; // Use larger of ship height or width.
+                // this.Camera.orthographicSize = (height - this.position.z) / 2f; // original
             }
 
             bool isSaving = false;
@@ -361,6 +407,9 @@ namespace KronalUtils
             }
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
+
+            //Debug.Log(string.Format("Whats My direction: {0}", this.direction));
+            //Debug.Log(string.Format("Whats My dir: {0}", dir));
 
             // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;

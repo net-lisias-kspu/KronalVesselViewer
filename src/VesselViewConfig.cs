@@ -66,6 +66,8 @@ namespace KronalUtils
         private Dictionary<Transform, Vector3> positions;
         private Dictionary<Renderer, bool> visibility;
         private Dictionary<Part, bool> freezed;
+        public Dictionary<Part, bool> procFairings;
+        public float procFairingOffset = 0f;
         private IShipconstruct ship;
         public List<VesselElementViewOptions> Config { get; private set; }
         public Action onApply;
@@ -77,6 +79,7 @@ namespace KronalUtils
             this.positions = new Dictionary<Transform, Vector3>();
             this.visibility = new Dictionary<Renderer, bool>();
             this.freezed = new Dictionary<Part, bool>();
+            this.procFairings = new Dictionary<Part, bool>();
             this.onApply = () => { };
             this.onRevert = () => { };
             this.Config = new List<VesselElementViewOptions>() {
@@ -108,8 +111,8 @@ namespace KronalUtils
                 },
                 new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
                     Options = {
-                        new VesselElementViewOption("Offset", true, true, ProcFairingExplode, false, 1f),
-                        new VesselElementViewOption("Hide", true, false, PartHide, false),
+                        new VesselElementViewOption("Offset", true, true, ProcFairingExplode, false, 3f),
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
                         new VesselElementViewOption("Hide front half", true, false, ProcFairingHide, false),
                     }
                 },
@@ -135,6 +138,7 @@ namespace KronalUtils
                 this.positions.Clear();
                 this.visibility.Clear();
                 this.freezed.Clear();
+                this.procFairings.Clear();
             }
             foreach (var t in p.GetComponentsInChildren<Transform>()){
                 if (toggleOn) { this.positions[t] = t.localPosition; }
@@ -147,8 +151,28 @@ namespace KronalUtils
             }
             foreach (var part in this.ship.Parts)
             {
-                if (toggleOn) { this.freezed[part] = part.frozen; }
-                else if ((!toggleOn) && this.freezed.ContainsKey(part)) { part.frozen = this.freezed[part]; }
+                if (toggleOn) { 
+                    this.freezed[part] = part.frozen; 
+                }
+                else if ((!toggleOn) && this.freezed.ContainsKey(part)) { 
+                    part.frozen = this.freezed[part]; 
+                }
+
+                if (part.Modules.Contains("ProceduralFairingSide"))
+                {
+                    var module = part.Module<Keramzit.ProceduralFairingSide>();
+
+                    // Preserve ship's original fairing lock state.
+                    if (toggleOn && !module.shapeLock)
+                    {
+                        module.shapeLock = true;
+                        this.procFairings[part] = true;
+                    }
+                    else if (!toggleOn && this.procFairings.ContainsKey(part))
+                    {
+                        module.shapeLock = false;
+                    }
+                }
             }
             if (!toggleOn) { this.onRevert(); }
             //else { this.onSaveState(); }
@@ -329,8 +353,10 @@ namespace KronalUtils
             var nct = part.FindModelTransform("nose_collider");
             Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
             if (!nct) return;
-            MeshFilter mf;
-            Vector3 extents = (mf = part.gameObject.GetComponentInChildren<MeshFilter>()) ? mf.mesh.bounds.size : new Vector3(o.valueParam, o.valueParam, o.valueParam);
+            this.procFairingOffset = o.valueParam; // steal the offset value. to be added to vessel width for rendering.
+            //MeshFilter mf;
+            //Vector3 extents = (mf = part.gameObject.GetComponentInChildren<MeshFilter>()) ? mf.mesh.bounds.size : new Vector3(o.valueParam, o.valueParam, o.valueParam); // original
+            Vector3 extents = new Vector3(o.valueParam, o.valueParam, o.valueParam);
             part.transform.Translate(Vector3.Scale(nct.right, extents), Space.World);
         }
 
@@ -341,7 +367,9 @@ namespace KronalUtils
             if (!nct) return;
             var forward = EditorLogic.startPod.transform.forward;
             var right = EditorLogic.startPod.transform.right;
-            if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f)
+
+            // if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
+            if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
             {
                 var renderer = part.GetComponentInChildren<Renderer>();
                 if (renderer) renderer.enabled = false;
