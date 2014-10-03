@@ -368,7 +368,7 @@ namespace KronalUtils
             var forward = EditorLogic.startPod.transform.forward;
             var right = EditorLogic.startPod.transform.right;
 
-            // if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
+            //if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
             if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
             {
                 var renderer = part.GetComponentInChildren<Renderer>();

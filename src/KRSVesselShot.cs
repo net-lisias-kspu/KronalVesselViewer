@@ -408,9 +408,6 @@ namespace KronalUtils
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
 
-            //Debug.Log(string.Format("Whats My direction: {0}", this.direction));
-            //Debug.Log(string.Format("Whats My dir: {0}", dir));
-
             // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;
             QualitySettings.shadowDistance = (this.uiFloatVals["shadowVal"] < 0f ? 0f : this.uiFloatVals["shadowVal"]);
