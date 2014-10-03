@@ -101,7 +101,7 @@ namespace KronalUtils
                 new VesselElementViewOptions("Engine Fairings", CanApplyIfModule("ModuleJettison")) {
                     Options = {
                         new VesselElementViewOption("Offset", true, true, EngineFairingExplode, true, 1f),
-                        new VesselElementViewOption("Hide", true, false, EngineFairingHide, false),
+                        new VesselElementViewOption("Hide", true, false, EngineFairingHide, true),
                     }
                 },
                 new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
@@ -118,12 +118,12 @@ namespace KronalUtils
                 },
                 new VesselElementViewOptions("Struts", CanApplyIfType("StrutConnector")) {
                     Options = {
-                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
                 },
                 new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
                     Options = {
-                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
                 }
             };
@@ -158,21 +158,7 @@ namespace KronalUtils
                     part.frozen = this.freezed[part]; 
                 }
 
-                if (part.Modules.Contains("ProceduralFairingSide"))
-                {
-                    var module = part.Module<Keramzit.ProceduralFairingSide>();
-
-                    // Preserve ship's original fairing lock state.
-                    if (toggleOn && !module.shapeLock)
-                    {
-                        module.shapeLock = true;
-                        this.procFairings[part] = true;
-                    }
-                    else if (!toggleOn && this.procFairings.ContainsKey(part))
-                    {
-                        module.shapeLock = false;
-                    }
-                }
+                this.proceduralFairingToggleState(toggleOn, part);
             }
             if (!toggleOn) { this.onRevert(); }
             //else { this.onSaveState(); }
@@ -206,6 +192,26 @@ namespace KronalUtils
             }
             
             this.onApply();
+        }
+
+
+        private void proceduralFairingToggleState(Boolean toggleOn, Part part)
+        {
+            if (part.Modules.Contains("ProceduralFairingSide"))
+            {
+                var module = part.Module<Keramzit.ProceduralFairingSide>();
+
+                // Preserve ship's original fairing lock state.
+                if (toggleOn && !module.shapeLock)
+                {
+                    module.shapeLock = true;
+                    this.procFairings[part] = true;
+                }
+                else if (!toggleOn && this.procFairings.ContainsKey(part))
+                {
+                    module.shapeLock = false;
+                }
+            }
         }
 
         private Func<Part, bool> CanApplyIfType(string typeName)
@@ -242,6 +248,7 @@ namespace KronalUtils
             MonoBehaviour.print("Exploding Stack Decoupler: " + part.ToString());
             var module = part.Module<ModuleDecouple>();
             if (module.isDecoupled) return;
+            if (!module.staged) return; // don't explode if tweakable staging is false
             if (!part.parent) return;
             Vector3 dir;
             if (module.isOmniDecoupler)
@@ -262,6 +269,7 @@ namespace KronalUtils
             MonoBehaviour.print("Exploding Radial Decoupler: " + part.ToString());
             var module = part.Module<ModuleAnchoredDecoupler>();
             if (module.isDecoupled) return;
+            if (!module.staged) return; // don't explode if tweakable staging is false
             if (string.IsNullOrEmpty(module.explosiveNodeID)) return;
             var an = module.explosiveNodeID == "srf" ? part.srfAttachNode : part.findAttachNode(module.explosiveNodeID);
             if (an == null || an.attachedPart == null) return;
