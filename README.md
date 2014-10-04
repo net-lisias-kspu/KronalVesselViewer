@@ -14,6 +14,33 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
+#### v0.0.4 - Pitch Perfect
+* Background colour sliders (white is no longer the only background colour render option) located under 'Blue Print'
+* Blue Print Shader is now disabled by default
+  * 'Blue Print shader' was causing the issue with the white rendering lines and off colouring in the bottom left corner
+  * Background colour controls are now available under 'Blue Print' which will eventually become 'Background' or 'Canvas'
+* UI Adjustments
+  * Shadow Control Dial (experimental)
+  * Bigger buttons
+  * Moved Orthographic Button
+  * Changed 'Exploded' references to 'Offset'
+  * Image quality can now be controlled with a dial
+* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
+  * Shadow Rendering Control
+  * Adjusted Camera Positioning
+  * Improved Camera Controls
+  * Part Option for Clamps
+  * Procedural fairings bug fixes
+    * Existing bug still exists where you must select minimum 4 fairings to hide 'Front Half'
+  * Edge Detect shader adjustment
+* To Install:
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (.DLL & KronalUtils/edn shader changed but be sure replace everything)
+  * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS.dll](https://github.com/KospY/KAS)
+  * Download and Build with [ProceduralFairings.dll](https://github.com/e-dog/ProceduralFairings)
+
 #### v0.0.3 - mrBlaQ
 * GUI Window Click trap implmented.  (Thanks [Git M4V](https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296) for directing me here)
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:

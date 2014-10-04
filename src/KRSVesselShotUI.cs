@@ -15,8 +15,6 @@ namespace KronalUtils
         private Rect windowSize;
         private Vector2 windowScrollPos;
         private int tabCurrent;//almost obsolete
-        private string[] tabNames;//obsolete
-        private Action[] tabGUI;//obsolete
         private int shaderTabCurrent;
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
@@ -24,7 +22,6 @@ namespace KronalUtils
         private ApplicationLauncherButton KVVButton;
         private bool visible;
         private KRSEditorAxis axis;
-
         private bool IsOnEditor()
         {
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
@@ -91,7 +88,6 @@ namespace KronalUtils
         {
             Vector2 position = new Vector2(Input.mousePosition.x,
                                            Screen.height - Input.mousePosition.y);
-            //return winRect.Contains(position);
             return this.windowSize.Contains(position);
         }
         /* Whenever we mouseover our window, we need to lock the editor so we don't pick up
@@ -139,7 +135,6 @@ namespace KronalUtils
             }
             if (visible) 
             {
-                //winRect = GUILayout.Window (winID, winRect, drawWindow, title);
                 this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
                 EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);//EditorLogic.softLock not supported anymore? this.windowSize is static not dynamic with drag & drop? what does this do?
             }
@@ -174,7 +169,7 @@ namespace KronalUtils
                 this.guiStyleButtonAlert.alignment = TextAnchor.MiddleCenter;
             }
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Explode"))
+            if (GUILayout.Button("Offset View"))
             {
                 this.control.Explode();
             }
@@ -194,51 +189,78 @@ namespace KronalUtils
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Ͼ"))
+            if (GUILayout.RepeatButton("ᴖ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(-45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.direction = Quaternion.AngleAxis(-0.4f, this.control.Camera.transform.right) * this.control.direction;
             }
-            if (GUILayout.RepeatButton("▲"))
+            if (GUILayout.RepeatButton("ϲ", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.RotateShip(-1f);
+            }
+            if (GUILayout.RepeatButton("▲", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.y -= 0.1f;
             }
-            if (GUILayout.Button("Ͽ")) //↶
+            if (GUILayout.RepeatButton("ᴐ", GUILayout.Width(34) , GUILayout.Height(34)))
             {
-                this.control.direction = Quaternion.AngleAxis(45f, this.control.Camera.transform.up) * this.control.direction;
+                this.control.RotateShip(1f);
             }
-            if (GUILayout.RepeatButton("ʘ"))
+            if (GUILayout.RepeatButton("+", GUILayout.Width(34) , GUILayout.Height(34)))
             {
                 this.control.position.z += 0.1f;
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.RepeatButton("◄"))
-            {
-                this.control.position.x += 0.1f;
-            }
-            if (GUILayout.RepeatButton("▼"))
-            {
-                this.control.position.y += 0.1f;
-            }
-            if (GUILayout.RepeatButton("►"))
-            {
-                this.control.position.x -= 0.1f;
-            }
-            if (GUILayout.RepeatButton("Ø"))
-            {
-                this.control.position.z -= 0.1f;
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+            if (GUILayout.Button("RESET", this.guiStyleButtonAlert, GUILayout.Width(34), GUILayout.Height(34)))
             {
                 this.control.direction = Vector3.forward;
                 this.control.position = Vector3.zero;
             }
             GUILayout.EndHorizontal();
-
             GUILayout.BeginHorizontal();
-            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic");
+            if (GUILayout.RepeatButton("ᴗ", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.direction = Quaternion.AngleAxis(0.4f, this.control.Camera.transform.right) * this.control.direction;
+            }
+            if (GUILayout.RepeatButton("◄", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x += 0.1f;
+            }
+            if (GUILayout.RepeatButton("▼", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.y += 0.1f;
+            }
+            if (GUILayout.RepeatButton("►", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.x -= 0.1f;
+            }
+            if (GUILayout.RepeatButton("-", GUILayout.Width(34) , GUILayout.Height(34)))
+            {
+                this.control.position.z -= 0.1f;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            this.control.Orthographic = GUILayout.Toggle(this.control.Orthographic, "Orthographic", GUILayout.ExpandWidth(true));
+            GUILayout.BeginHorizontal();
+            this.control.uiFloatVals["shadowVal"] = 0f;
+            GUILayout.Label("Shadow", GUILayout.Width(46f));
+            GUILayout.Space(3f);
+            this.control.uiFloatVals["shadowValPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["shadowValPercent"], 0f, 300f, GUILayout.Width(153f));
+            GUILayout.Space(1f);
+            GUILayout.Label(this.control.uiFloatVals["shadowValPercent"].ToString("F"), GUILayout.Width(50f));
+            this.control.uiFloatVals["shadowVal"] = this.control.uiFloatVals["shadowValPercent"] * 1000f;
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("File Quality", GUILayout.Width(68f));
+            GUILayout.Space(1f);
+            this.control.uiFloatVals["imgPercent"] = GUILayout.HorizontalSlider(this.control.uiFloatVals["imgPercent"]-1, 0f, 8f, GUILayout.Width(140f));
+            GUILayout.Space(1f);
+            String disW = Math.Floor((control.uiFloatVals["imgPercent"] +1) * control.calculatedWidth).ToString();
+            String disH = Math.Floor((control.uiFloatVals["imgPercent"] + 1) * control.calculatedHeight).ToString();
+            GUILayout.Label(String.Format("{0:0.#}", this.control.uiFloatVals["imgPercent"].ToString("F")) + "\n" + disW + " x " + disH, GUILayout.Width(110f));
+            control.uiFloatVals["imgPercent"] = control.uiFloatVals["imgPercent"] + 1;
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -246,11 +268,6 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
             
             this.tabCurrent = 0;//used only in Update() be 0.  This will be removed later
-        }
-        private bool GUITabShaderIncExceeded()
-        {
-            if (this.shaderTabCurrent < this.control.Effects.Keys.ToArray<string>().Length) { return true; }//valid effect
-            return false;
         }
         private void GUITabShader(string name)
         {
@@ -261,11 +278,49 @@ namespace KronalUtils
                 GUILayout.EndHorizontal();
                 return;
             }
+            if (name == "Blue Print" && this.control.Effects[name].Enabled)
+            {
+                GUILayout.BeginHorizontal();
+                GUIStyle phaseNotice = new GUIStyle(GUI.skin.label);
+                phaseNotice.fontSize = 10;
+                phaseNotice.active.textColor = XKCDColors.BrightRed;
+                phaseNotice.normal.textColor = XKCDColors.BrightRed;
+                GUILayout.Label("**This feature will be phased out. Change Log: 0.0.4**", phaseNotice, GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+            }
             GUILayout.BeginHorizontal();
             this.control.Effects[name].Enabled = GUILayout.Toggle(this.control.Effects[name].Enabled, "Active");
             GUILayout.EndHorizontal();
             for (var i = 0; i < this.control.Effects[name].PropertyCount; ++i)
             {
+
+                if (name == "Blue Print" && !this.control.Effects[name].Enabled)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Background (RGB)", GUILayout.Width(74f));
+                    GUILayout.BeginVertical();
+                    Color newVal = new Color(1f,1f,1f,1f);
+                    newVal.r = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgR"], 0f, 1f);
+                    newVal.g = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgG"], 0f, 1f);
+                    newVal.b = GUILayout.HorizontalSlider(this.control.uiFloatVals["bgB"], 0f, 1f);
+                    this.control.uiFloatVals["bgR"] = newVal.r;
+                    this.control.uiFloatVals["bgG"] = newVal.g;
+                    this.control.uiFloatVals["bgB"] = newVal.b;
+                    GUILayout.EndVertical();
+                    GUILayout.BeginVertical();
+                    GUILayout.Label(this.control.uiFloatVals["bgR"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgG"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.Label(this.control.uiFloatVals["bgB"].ToString("F"), GUILayout.Width(40f));
+                    GUILayout.EndVertical();
+                    if (GUILayout.Button("RESET", this.guiStyleButtonAlert))
+                    {
+                        this.control.uiFloatVals["bgR"] = this.control.uiFloatVals["bgR_"];
+                        this.control.uiFloatVals["bgG"] = this.control.uiFloatVals["bgG_"];
+                        this.control.uiFloatVals["bgB"] = this.control.uiFloatVals["bgB_"];
+                    }
+                    GUILayout.EndHorizontal();
+                    break;
+                }
                 var prop = this.control.Effects[name][i];
                 prop.Match(
                     IfFloat: (p) =>

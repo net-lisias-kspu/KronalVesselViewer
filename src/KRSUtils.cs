@@ -34,7 +34,7 @@ namespace KronalUtils
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:000}",
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds);
-            MonoBehaviour.print("[DEBUG] Event: " + name + "   DT: " + elapsedTime);
+            //MonoBehaviour.print("[DEBUG] Event: " + name + "   DT: " + elapsedTime);
         }
     }
 
@@ -79,7 +79,6 @@ namespace KronalUtils
 
         public static Vector3 VectorSwap(Vector3 v)
         {
-            //return new Vector3(v.y, v.x, v.z);
             return new Vector3(v.y, v.z, v.x);
         }
 
