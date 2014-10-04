@@ -15,7 +15,8 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.5a
-* Updates coming
+* Alpha Transparency Option
+* Non-auto refresh of preview image
 
 #### v0.0.4 - Pitch Perfect
 * Background colour sliders (white is no longer the only background colour render option) located under 'Blue Print'
