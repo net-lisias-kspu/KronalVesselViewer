@@ -274,6 +274,10 @@ namespace KronalUtils
             var an = module.explosiveNodeID == "srf" ? part.srfAttachNode : part.findAttachNode(module.explosiveNodeID);
             if (an == null || an.attachedPart == null) return;
             var distance = o.valueParam;
+            if (part.name.Contains("FairingCone"))
+            {
+                distance *= -1; // invert distance for KW Fairings.
+            }
             Part partToBeMoved;
             if (an.attachedPart == part.parent)
             {
