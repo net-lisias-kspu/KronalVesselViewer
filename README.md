@@ -20,20 +20,23 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
   * 'Blue Print shader' was causing the issue with the white rendering lines and off colouring in the bottom left corner
   * Background colour controls are now available under 'Blue Print' which will eventually become 'Background' or 'Canvas'
 * UI Adjustments
+  * Shadow Control Dial (experimental)
   * Bigger buttons
   * Moved Orthographic Button
   * Changed 'Exploded' references to 'Offset'
   * Image quality can now be controlled with a dial
-* [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) combined efforts:
-  * Shadow Rendering & UI
 * [Git deckblad](https://github.com/deckblad) ([KSP forums mrBlaQ](http://forum.kerbalspaceprogram.com/members/102679-mrBlaQ)) resolved:
+  * Shadow Rendering Control
   * Adjusted Camera Positioning
   * Improved Camera Controls
   * Part Option for Clamps
-* To Install:
+  * Procedural fairings bug fixes
+  * Edge Detect shader adjustment
+* To Install/Build/Compile:
   * Download Source Code (Ignore Zip)
   * Build with required KSP DLLs
-  * Download and Build with [KAS dll](https://github.com/KospY/KAS)
+  * Download and Build with [KAS.dll](https://github.com/KospY/KAS)
+  * Download and Build with [ProceduralFairings.dll](https://github.com/e-dog/ProceduralFairings)
   * Build in from C#
   * Install Normally (or use a batch script)
 
