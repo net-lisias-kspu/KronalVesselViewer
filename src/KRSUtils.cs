@@ -37,40 +37,9 @@ namespace KronalUtils
             //MonoBehaviour.print("[DEBUG] Event: " + name + "   DT: " + elapsedTime);
         }
     }
-    public class AssemblyData
-    {
-        public string name;
-        public string version;
-        public List<Type> types;
-
-        public AssemblyData(string n, string v, List<Type> t)
-        {
-            name = n;
-            version = v;
-            types = t;
-        }
-    }
 
     class KRSUtils
     {
-        public List<AssemblyData> installedMods = new List<AssemblyData>();
-        public KRSUtils()
-        {
-UnityEngine.Debug.Log(string.Format("KVV: =======KRSUtils========"));
-MonoBehaviour.print("KVV: =======KRSUtils========");
-            //https://github.com/Xaiier/Kreeper/blob/master/Kreeper/Kreeper.cs#L92-L94 <- Thanks Xaiier!
-            foreach (AssemblyLoader.LoadedAssembly a in AssemblyLoader.loadedAssemblies)
-            {
-                string name = a.name;
-                string version = a.assembly.FullName.Substring(a.assembly.FullName.IndexOf('=') + 1, a.assembly.FullName.IndexOf(",", a.assembly.FullName.IndexOf("=")) - (a.assembly.FullName.IndexOf("=") + 1));
-
-UnityEngine.Debug.Log(string.Format("KVV: name: {0}", name));
-MonoBehaviour.print("KVV: name: "+ name.ToString());
-                List<Type> types = new List<Type>(a.assembly.GetTypes());
-                installedMods.Add(new AssemblyData(name, version, types));
-            }
-
-        }
         public static Type FindType(string qualifiedTypeName)
         {
             Type t = Type.GetType(qualifiedTypeName);
