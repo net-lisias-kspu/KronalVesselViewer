@@ -183,6 +183,7 @@ namespace KronalUtils
 
             if (GUILayout.Button("Screenshot"))
             {
+                control.uiBoolVals["saveTextureEvent"] = true;
                 this.control.Update();
                 this.control.Execute();
             }
@@ -384,6 +385,9 @@ namespace KronalUtils
 
         private void GUITabView()
         {
+            GUILayout.BeginVertical();
+            control.uiBoolVals["canPreview"] = GUILayout.Toggle(control.uiBoolVals["canPreview"], "Auto-Preview", GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
             var r = GUILayoutUtility.GetRect(0, this.windowSize.width, 0, this.windowSize.height);
             if (Event.current.type == EventType.Repaint)
             {

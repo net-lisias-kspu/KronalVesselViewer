@@ -25,6 +25,10 @@ namespace KronalUtils
             {"bgR",1f},{"bgG",1f},{"bgB",1f},{"bgA",1f},//RGBA
             {"bgR_",0f},{"bgG_",0.07f},{"bgB_",0.11f},{"bgA_",1f}//RGBA defaults //00406E 0,64,110 -> reduced due to color adjust shader
         };
+        public Dictionary<string, bool> uiBoolVals = new Dictionary<string, bool> {
+            {"canPreview",true},{"saveTextureEvent",false}
+        };
+        
         private Camera[] cameras;
         private RenderTexture rt;
         //private int maxWidth = 4096;
@@ -319,19 +323,23 @@ namespace KronalUtils
                 fileWidth = (int)Math.Floor(imageWidth * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
                 fileHeight = (int)Math.Floor(imageHeight * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
             }
-            this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-            //this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-            this.Camera.targetTexture = this.rt;
-            this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
-            this.Camera.Render();
-            this.Camera.targetTexture = null;
-            //Graphics.Blit(this.rt, this.rt, MaterialColorAdjust.Material);
-            //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
-            foreach (var fx in Effects)
+
+            if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
-                if (fx.Value.Enabled)
+                this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                //this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                this.Camera.targetTexture = this.rt;
+                this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
+                this.Camera.Render();
+                this.Camera.targetTexture = null;
+                //Graphics.Blit(this.rt, this.rt, MaterialColorAdjust.Material);
+                //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
+                foreach (var fx in Effects)
                 {
-                    Graphics.Blit(this.rt, this.rt, fx.Value.Material);
+                    if (fx.Value.Enabled)
+                    {
+                        Graphics.Blit(this.rt, this.rt, fx.Value.Material);
+                    }
                 }
             }
         }
