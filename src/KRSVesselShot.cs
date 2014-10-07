@@ -368,7 +368,6 @@ namespace KronalUtils
             byte[] bytes = screenShot.EncodeToPNG();
 			string ShipNameFileSafe = MakeValidFileName(fileName);
             uint file_inc = 0;
-            //uint breakCount = 0;
             string filename = "";
             string filenamebase = "";
             

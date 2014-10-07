@@ -252,7 +252,7 @@ namespace KronalUtils
 
         private void PartHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Hiding Part " + part.ToString());
+            //MonoBehaviour.print("Hiding Part " + part.ToString());
             foreach (var r in part.GetComponents<Renderer>())
             {
                 r.enabled = false;
@@ -261,7 +261,7 @@ namespace KronalUtils
 
         private void PartHideRecursive(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Hiding Part " + part.ToString());
+            //MonoBehaviour.print("Hiding Part " + part.ToString());
             foreach (var r in part.GetComponentsInChildren<Renderer>())
             {
                 r.enabled = false;
@@ -270,7 +270,7 @@ namespace KronalUtils
 
         private void StackDecouplerExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Exploding Stack Decoupler: " + part.ToString());
+            //MonoBehaviour.print("Exploding Stack Decoupler: " + part.ToString());
             var module = part.Module<ModuleDecouple>();
             if (module.isDecoupled) return;
             if (!module.staged) return; // don't explode if tweakable staging is false
@@ -291,7 +291,7 @@ namespace KronalUtils
 
         private void RadialDecouplerExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Exploding Radial Decoupler: " + part.ToString());
+            //MonoBehaviour.print("Exploding Radial Decoupler: " + part.ToString());
             var module = part.Module<ModuleAnchoredDecoupler>();
             if (module.isDecoupled) return;
             if (!module.staged) return; // don't explode if tweakable staging is false
@@ -318,7 +318,7 @@ namespace KronalUtils
 
         private void DockingPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
+            //MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
             var module = part.Module<ModuleDockingNode>();
             if (string.IsNullOrEmpty(module.referenceAttachNode)) return;
             var an = part.findAttachNode(module.referenceAttachNode);
@@ -339,7 +339,7 @@ namespace KronalUtils
 
         private void EngineFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Exploding Engine Fairing: " + part.ToString());
+            //MonoBehaviour.print("Exploding Engine Fairing: " + part.ToString());
             var module = part.Module<ModuleJettison>();
             if (!module.isJettisoned)
             {
@@ -352,7 +352,7 @@ namespace KronalUtils
 
         private void EngineFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Hiding Engine Fairing: " + part.ToString());
+            //MonoBehaviour.print("Hiding Engine Fairing: " + part.ToString());
             var module = part.Module<ModuleJettison>();
             if (module.jettisonTransform)
             {

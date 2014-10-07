@@ -1,4 +1,4 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
@@ -14,11 +14,8 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
-#### v0.0.5a
-* Alpha Transparency Option
-* Non-auto refresh of preview image
-
 #### v0.0.4 - Pitch Perfect
+* 2014-10-06 Hotfix (Error was generated when Procedural Fairings was not installed)
 * Background colour sliders (white is no longer the only background colour render option) located under 'Blue Print'
 * Blue Print Shader is now disabled by default
   * 'Blue Print shader' was causing the issue with the white rendering lines and off colouring in the bottom left corner
