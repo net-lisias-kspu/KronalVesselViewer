@@ -15,6 +15,8 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ### Bigorangemachine's Fork
 
 #### v0.0.4 - Pitch Perfect
+* Added 'Auto-Preview' checkbox (for slower computers)
+* [HOT FIX] Fixed Bug where parts would not 'Offset' (Formerly Explode View) unless Procedural Fairings was installed
 * Background colour sliders (white is no longer the only background colour render option) located under 'Blue Print'
 * Blue Print Shader is now disabled by default
   * 'Blue Print shader' was causing the issue with the white rendering lines and off colouring in the bottom left corner
