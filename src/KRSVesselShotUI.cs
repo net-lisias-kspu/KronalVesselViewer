@@ -88,7 +88,6 @@ namespace KronalUtils
         {
             Vector2 position = new Vector2(Input.mousePosition.x,
                                            Screen.height - Input.mousePosition.y);
-            //return winRect.Contains(position);
             return this.windowSize.Contains(position);
         }
         /* Whenever we mouseover our window, we need to lock the editor so we don't pick up
@@ -136,7 +135,6 @@ namespace KronalUtils
             }
             if (visible) 
             {
-                //winRect = GUILayout.Window (winID, winRect, drawWindow, title);
                 this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
                 EditorLogic.softLock = this.windowSize.Contains(Event.current.mousePosition);//EditorLogic.softLock not supported anymore? this.windowSize is static not dynamic with drag & drop? what does this do?
             }

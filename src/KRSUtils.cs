@@ -79,7 +79,6 @@ namespace KronalUtils
 
         public static Vector3 VectorSwap(Vector3 v)
         {
-            //return new Vector3(v.y, v.x, v.z);
             return new Vector3(v.y, v.z, v.x);
         }
 
