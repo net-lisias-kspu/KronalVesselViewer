@@ -1,4 +1,4 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
@@ -13,10 +13,6 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ==========================================
 
 ### Bigorangemachine's Fork
-
-#### v0.0.5a
-* Alpha Transparency Option
-* Non-auto refresh of preview image
 
 #### v0.0.4 - Pitch Perfect
 * Added 'Auto-Preview' checkbox (for slower computers)

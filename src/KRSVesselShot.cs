@@ -31,8 +31,6 @@ namespace KronalUtils
         
         private Camera[] cameras;
         private RenderTexture rt;
-        //private int maxWidth = 4096;
-        //private int maxHeight = 4096;
         private int maxWidth = 1024;
         private int maxHeight = 1024;
         private Bounds shipBounds;
@@ -113,7 +111,6 @@ namespace KronalUtils
             GameEvents.onPartRemove.Remove(PartRemoved);
         }
 
-        // Sets up Orthographic and Perspective camera.
         private void SetupCameras()
         {
             this.cameras = new Camera[2];
@@ -238,7 +235,6 @@ namespace KronalUtils
 
             this.Camera.transform.position = this.shipBounds.center;
 
-            // This sets the horizon before the camera looks to vehicle center.
             if (HighLogic.LoadedScene == GameScenes.SPH)
             {
                 this.Camera.transform.rotation = Quaternion.AngleAxis(90, Vector3.right);
@@ -247,12 +243,9 @@ namespace KronalUtils
             {
                 this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.right);
             }
-            // this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up); // original 
 
             // Apply angle Vector to camera.
             this.Camera.transform.Translate(minusDir * this.Camera.nearClipPlane);
-            // this.Camera.transform.Translate(Vector3.Scale(minusDir, this.shipBounds.extents) + minusDir * this.Camera.nearClipPlane); // original 
-            // Deckblad: There was a lot of math here when all we needed to do is establish the rotation of the camera.
 
             // Face camera to vehicle.
             this.Camera.transform.LookAt(this.shipBounds.center);
@@ -268,23 +261,14 @@ namespace KronalUtils
 
             // Find distance from vehicle.
             float positionOffset = (this.shipBounds.size.magnitude - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
-            // float positionOffset = (height - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f)) - depth * 0.5f; // original 
-            // Use magnitude of bounds instead of height and remove vehicle bounds depth for uniform distance from vehicle. Height and depth of vehicle change in relation to the camera as we move around the vehicle.
 
-            // Translate and Zoom camera
             this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
-
-            // Get distance from camera to ship. Apply to farClipPlane
             float distanceToShip = Vector3.Distance(this.Camera.transform.position, this.shipBounds.center);
-
-            // Set far clip plane to just past size of vehicle.
             this.Camera.farClipPlane = distanceToShip + this.Camera.nearClipPlane + depth * 2 + 1; // 1 for the first rotation vector
-            // this.Camera.farClipPlane = Camera.nearClipPlane + positionOffset + this.position.magnitude + depth; // original
             
             if (this.Orthographic)
             {
                 this.Camera.orthographicSize = (Math.Max(height, width) - this.position.z) / 2f; // Use larger of ship height or width.
-                // this.Camera.orthographicSize = (height - this.position.z) / 2f; // original
             }
 
             bool isSaving = false;
@@ -300,7 +284,6 @@ namespace KronalUtils
                 this.calculatedHeight = (int)(this.calculatedWidth / tmpAspect);
             }
 
-            // If we're saving, use full resolution.
             if (imageWidth <= 0 || imageHeight <= 0)
             {
                 // Constrain image to max size with respect to aspect
@@ -346,19 +329,11 @@ namespace KronalUtils
 
         private void SaveTexture(String fileName)
         {
-            //int fileWidth = (int)Math.Floor(this.rt.width * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
-            //int fileHeight = (int)Math.Floor(this.rt.height * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
             int fileWidth = this.rt.width;
             int fileHeight = this.rt.height;
             Debug.Log(string.Format("KVV: SIZE: {0} x {1}", fileWidth, fileHeight));
-            //yield return new WaitForEndOfFrame();
-            //TextureFormat.ARGB32 for transparent
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, true);
-            Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.ARGB32, true);
 
-            //Texture2D savedTexture = this.rt as Texture2D;
+            Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
             
             var saveRt = RenderTexture.active;
             RenderTexture.active = this.rt;
@@ -415,18 +390,16 @@ namespace KronalUtils
 
             var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
 
-            // I'm thinking to turn shadows off here...
             storedShadowDistance = QualitySettings.shadowDistance;
             QualitySettings.shadowDistance = (this.uiFloatVals["shadowVal"] < 0f ? 0f : this.uiFloatVals["shadowVal"]);
             
             GenTexture(dir, width, height);
 
-            // And turning shadows back on here.
             QualitySettings.shadowDistance = storedShadowDistance;
             
         }
 
-        internal Texture Texture()//not used?!
+        internal Texture Texture()
         {
             if (!((EditorLogic.startPod) && (this.Ship != null)))
             {
