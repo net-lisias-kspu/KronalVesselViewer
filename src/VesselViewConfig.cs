@@ -72,10 +72,26 @@ namespace KronalUtils
         public List<VesselElementViewOptions> Config { get; private set; }
         public Action onApply;
         public Action onRevert;
+        public List<String> installedMods = new List<String>();
+        public void buildModList()
+        {
+            //https://github.com/Xaiier/Kreeper/blob/master/Kreeper/Kreeper.cs#L92-L94 <- Thanks Xaiier!
+            foreach (AssemblyLoader.LoadedAssembly a in AssemblyLoader.loadedAssemblies)
+            {
+                string name = a.name;
+//UnityEngine.Debug.Log(string.Format("KVV: name: {0}", name));//future debubging
+                installedMods.Add(name);
+            }
+        }
+        public bool hasMod(string modIdent)
+        {
+            return installedMods.Contains(modIdent);
+        }
 
         //constructor
         public VesselViewConfig()
         {
+            buildModList();
             this.positions = new Dictionary<Transform, Vector3>();
             this.visibility = new Dictionary<Renderer, bool>();
             this.freezed = new Dictionary<Part, bool>();
@@ -103,30 +119,37 @@ namespace KronalUtils
                         new VesselElementViewOption("Offset", true, true, EngineFairingExplode, true, 1f),
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, true),
                     }
-                },
-                new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
+                }
+            };
+            if(hasMod("KAS")){
+                Config.Add(new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
                     Options = {
                         new VesselElementViewOption("Offset", true, true, KASConnectorPortExplode, true, 1f),
                     }
-                },
-                new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide")) {
+                });
+            }
+            if (hasMod("ProceduralFairings"))
+            {
+                Config.Add(new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide"))
+                {
                     Options = {
                         new VesselElementViewOption("Offset", true, true, ProcFairingExplode, false, 3f),
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, false),
                         new VesselElementViewOption("Hide front half", true, false, ProcFairingHide, false),
                     }
-                },
-                new VesselElementViewOptions("Struts", CanApplyIfType("StrutConnector")) {
+                });
+            }
+            
+            Config.Add(new VesselElementViewOptions("Struts", CanApplyIfType("StrutConnector")) {
                     Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
-                },
-                new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
+            });
+            Config.Add(new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
                     Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
-                }
-            };
+             });
         }
 
         //updated for simpflication
@@ -158,7 +181,10 @@ namespace KronalUtils
                     part.frozen = this.freezed[part]; 
                 }
 
-                this.proceduralFairingToggleState(toggleOn, part);
+                if (hasMod("ProceduralFairings"))
+                {
+                    this.proceduralFairingToggleState(toggleOn, part);
+                }
             }
             if (!toggleOn) { this.onRevert(); }
             //else { this.onSaveState(); }
@@ -179,7 +205,6 @@ namespace KronalUtils
         public void Execute(IShipconstruct ship)
         {
             this.ship = ship;
-
             StateToggle(false);//Revert();
             StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)
@@ -197,7 +222,7 @@ namespace KronalUtils
 
         private void proceduralFairingToggleState(Boolean toggleOn, Part part)
         {
-            if (part.Modules.Contains("ProceduralFairingSide"))
+            if (part.Modules.Contains("ProceduralFairingSide") && hasMod("ProceduralFairings"))
             {
                 var module = part.Module<Keramzit.ProceduralFairingSide>();
 
@@ -248,7 +273,7 @@ namespace KronalUtils
             //MonoBehaviour.print("Exploding Stack Decoupler: " + part.ToString());
             var module = part.Module<ModuleDecouple>();
             if (module.isDecoupled) return;
-            if (!module.staged) return;
+            if (!module.staged) return; // don't explode if tweakable staging is false
             if (!part.parent) return;
             Vector3 dir;
             if (module.isOmniDecoupler)
@@ -269,11 +294,15 @@ namespace KronalUtils
             //MonoBehaviour.print("Exploding Radial Decoupler: " + part.ToString());
             var module = part.Module<ModuleAnchoredDecoupler>();
             if (module.isDecoupled) return;
-            if (!module.staged) return;
+            if (!module.staged) return; // don't explode if tweakable staging is false
             if (string.IsNullOrEmpty(module.explosiveNodeID)) return;
             var an = module.explosiveNodeID == "srf" ? part.srfAttachNode : part.findAttachNode(module.explosiveNodeID);
             if (an == null || an.attachedPart == null) return;
             var distance = o.valueParam;
+            if (part.name.Contains("FairingCone"))
+            {
+                distance *= -1; // invert distance for KW Fairings.
+            }
             Part partToBeMoved;
             if (an.attachedPart == part.parent)
             {
@@ -336,48 +365,59 @@ namespace KronalUtils
 
         private void KASConnectorPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
-            var module = part.Module<KAS.KASModulePort>();//this creates KAS Dependancy.  
-            if (string.IsNullOrEmpty(module.attachNode)) return;
-            var an = part.findAttachNode(module.attachNode);
-            if (!an.attachedPart) return;
-            var distance = o.valueParam;
-            Part partToBeMoved;
-            if (an.attachedPart == part.parent)
+            if (hasMod("KAS"))
             {
-                distance *= -1;
-                partToBeMoved = part;
+                var module = part.Module<KAS.KASModulePort>();//this creates KAS Dependancy.  
+                if (string.IsNullOrEmpty(module.attachNode)) return;
+                var an = part.findAttachNode(module.attachNode);
+                if (!an.attachedPart) return;
+                var distance = o.valueParam;
+                Part partToBeMoved;
+                if (an.attachedPart == part.parent)
+                {
+                    distance *= -1;
+                    partToBeMoved = part;
+                }
+                else
+                {
+                    partToBeMoved = an.attachedPart;
+                }
+                partToBeMoved.transform.Translate(module.portNode.forward * distance, Space.World);
             }
-            else
-            {
-                partToBeMoved = an.attachedPart;
-            }
-            partToBeMoved.transform.Translate(module.portNode.forward * distance, Space.World);
         }
 
         private void ProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
-            var nct = part.FindModelTransform("nose_collider");
-            //Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
-            if (!nct) return;
-            this.procFairingOffset = o.valueParam; // steal the offset value. to be added to vessel width for rendering.
-            Vector3 extents = new Vector3(o.valueParam, o.valueParam, o.valueParam);
-            part.transform.Translate(Vector3.Scale(nct.right, extents), Space.World);
+            if (hasMod("ProceduralFairings"))
+            {
+                //MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
+                var nct = part.FindModelTransform("nose_collider");
+                //Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
+                if (!nct) return;
+                this.procFairingOffset = o.valueParam; // steal the offset value. to be added to vessel width for rendering.
+                //MeshFilter mf;
+                //Vector3 extents = (mf = part.gameObject.GetComponentInChildren<MeshFilter>()) ? mf.mesh.bounds.size : new Vector3(o.valueParam, o.valueParam, o.valueParam); // original
+                Vector3 extents = new Vector3(o.valueParam, o.valueParam, o.valueParam);
+                part.transform.Translate(Vector3.Scale(nct.right, extents), Space.World);
+            }
         }
 
         private void ProcFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Hiding Procedural Fairing: " + part.ToString());
-            var nct = part.FindModelTransform("nose_collider");
-            if (!nct) return;
-            var forward = EditorLogic.startPod.transform.forward;
-            var right = EditorLogic.startPod.transform.right;
-
-            if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
+            if (hasMod("ProceduralFairings"))
             {
-                var renderer = part.GetComponentInChildren<Renderer>();
-                if (renderer) renderer.enabled = false;
+                //MonoBehaviour.print("Hiding Procedural Fairing: " + part.ToString());
+                var nct = part.FindModelTransform("nose_collider");
+                if (!nct) return;
+                var forward = EditorLogic.startPod.transform.forward;
+                var right = EditorLogic.startPod.transform.right;
+
+                //if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
+                if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
+                {
+                    var renderer = part.GetComponentInChildren<Renderer>();
+                    if (renderer) renderer.enabled = false;
+                }
             }
         }
     }

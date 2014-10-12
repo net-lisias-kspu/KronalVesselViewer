@@ -92,7 +92,7 @@ namespace KronalUtils
         {
             return (((value - min) % (max - min)) + (max - min)) % (max - min) + min;
         }
-
+        /*
         public static KeyCode[] BindableKeys = {
             KeyCode.Alpha0,
             KeyCode.Alpha1,
@@ -200,6 +200,6 @@ namespace KronalUtils
             KeyCode.Mouse5,
             KeyCode.Mouse6,
         };
-        public static string AxisFormat = "joy{0}.{1}";
+        public static string AxisFormat = "joy{0}.{1}";*/
     }
 }
