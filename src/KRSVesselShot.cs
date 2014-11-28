@@ -31,8 +31,6 @@ namespace KronalUtils
         
         private Camera[] cameras;
         private RenderTexture rt;
-        //private int maxWidth = 4096;
-        //private int maxHeight = 4096;
         private int maxWidth = 1024;
         private int maxHeight = 1024;
         private Bounds shipBounds;
@@ -346,19 +344,11 @@ namespace KronalUtils
 
         private void SaveTexture(String fileName)
         {
-            //int fileWidth = (int)Math.Floor(this.rt.width * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
-            //int fileHeight = (int)Math.Floor(this.rt.height * (uiFloatVals["imgPercent"] >= 1 ? uiFloatVals["imgPercent"] : 1f));
             int fileWidth = this.rt.width;
             int fileHeight = this.rt.height;
             Debug.Log(string.Format("KVV: SIZE: {0} x {1}", fileWidth, fileHeight));
-            //yield return new WaitForEndOfFrame();
-            //TextureFormat.ARGB32 for transparent
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, false);
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.RGB24, true);
-            Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
-            //Texture2D screenShot = new Texture2D(this.rt.width, this.rt.height, TextureFormat.ARGB32, true);
 
-            //Texture2D savedTexture = this.rt as Texture2D;
+            Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
             
             var saveRt = RenderTexture.active;
             RenderTexture.active = this.rt;
