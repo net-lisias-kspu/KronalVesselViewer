@@ -155,7 +155,8 @@ namespace KronalUtils
         //updated for simpflication
         private void StateToggle(bool toggleOn)
         {
-            var p = EditorLogic.startPod;
+            //var p = EditorLogic.startPod;
+            var p = EditorLogic.RootPart;
             if (toggleOn)
             {
                 this.positions.Clear();
@@ -409,9 +410,11 @@ namespace KronalUtils
                 //MonoBehaviour.print("Hiding Procedural Fairing: " + part.ToString());
                 var nct = part.FindModelTransform("nose_collider");
                 if (!nct) return;
-                var forward = EditorLogic.startPod.transform.forward;
-                var right = EditorLogic.startPod.transform.right;
-
+                //var forward = EditorLogic.startPod.transform.forward;
+                //var right = EditorLogic.startPod.transform.right;
+                var forward = EditorLogic.RootPart.transform.forward;
+                var right = EditorLogic.RootPart.transform.right;
+                
                 //if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
                 if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
                 {

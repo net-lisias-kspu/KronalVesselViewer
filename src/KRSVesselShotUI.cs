@@ -24,7 +24,10 @@ namespace KronalUtils
         private KRSEditorAxis axis;
         private bool IsOnEditor()
         {
-            return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
+            //return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
+            Debug.Log(string.Format("HighLogic.LoadedSceneIsEditor: {0}", HighLogic.LoadedSceneIsEditor));
+            Debug.Log(string.Format("HighLogic.LoadedSceneIsEditor: {0}", HighLogic.LoadedSceneIsEditor));
+            return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedSceneIsEditor);
         }
 
         public void Awake()
@@ -106,8 +109,8 @@ namespace KronalUtils
                                                 | ControlTypes.EDITOR_PAD_PICK_PLACE
                                                 | ControlTypes.EDITOR_PAD_PICK_COPY
                                                 | ControlTypes.EDITOR_EDIT_STAGES
-                                                | ControlTypes.EDITOR_ROTATE_PARTS
-                                                | ControlTypes.EDITOR_OVERLAYS;
+                                                | ControlTypes.EDITOR_GIZMO_TOOLS
+                                                | ControlTypes.EDITOR_ROOT_REFLOW;
 
                     InputLockManager.SetControlLock(controlTypes, this.inputLockIdent);
                 }
@@ -127,7 +130,7 @@ namespace KronalUtils
         {
             switch (HighLogic.LoadedScene) {//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
                 case GameScenes.EDITOR:
-                case GameScenes.SPH:
+                //case GameScenes.SPH:
                     break;
                 default:
                     /* don't show window during scene changes */

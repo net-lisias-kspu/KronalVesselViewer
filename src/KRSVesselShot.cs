@@ -136,7 +136,8 @@ namespace KronalUtils
             if (HighLogic.LoadedScene == GameScenes.SPH)
             {
                 Debug.Log(string.Format("Rotating in SPH: {0}", degrees));
-                rotateAxis = EditorLogic.startPod.transform.forward;
+                //rotateAxis = EditorLogic.startPod.transform.forward;
+                rotateAxis = EditorLogic.RootPart.transform.forward;
             }
             else
             {
@@ -412,7 +413,8 @@ namespace KronalUtils
             return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
         }
         public void Execute() {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            //if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!((EditorLogic.RootPart) && (this.Ship != null)))
             {
                 return;
             }
@@ -422,7 +424,8 @@ namespace KronalUtils
 
         public void Explode()
         {
-            if (!EditorLogic.startPod || this.Ship == null)
+            //if (!EditorLogic.startPod || this.Ship == null)
+            if (!EditorLogic.RootPart || this.Ship == null)
             {
                 return;
             }
@@ -433,14 +436,15 @@ namespace KronalUtils
 
         public void Update(int width = -1, int height = -1)
         {
-            if (!EditorLogic.startPod || this.Ship == null)
+            //if (!EditorLogic.startPod || this.Ship == null)
+            if (!EditorLogic.RootPart || this.Ship == null)
             {
                 return;
             }
 
-            var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
-
-            // I'm thinking to turn shadows off here...
+            //var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
+            var dir = EditorLogic.RootPart.transform.TransformDirection(this.direction);
+            
             storedShadowDistance = QualitySettings.shadowDistance;
             QualitySettings.shadowDistance = (this.uiFloatVals["shadowVal"] < 0f ? 0f : this.uiFloatVals["shadowVal"]);
             
@@ -453,7 +457,9 @@ namespace KronalUtils
 
         internal Texture Texture()//not used?!
         {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            
+            //if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!((EditorLogic.RootPart) && (this.Ship != null)))
             {
                 return null;
             }
