@@ -258,9 +258,12 @@ namespace KronalUtils
 
         public void GenTexture(Vector3 direction, int imageWidth = -1, int imageHeight = -1)
         {
-            foreach (Part p in EditorLogic.fetch.ship)
+            if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
-                ReplacePartShaders(p);
+	            foreach (Part p in EditorLogic.fetch.ship)
+	            {
+	                ReplacePartShaders(p);
+	            }
             }
 
             var minusDir = -direction;
@@ -362,7 +365,6 @@ namespace KronalUtils
             if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
                 this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-                //this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
                 this.Camera.targetTexture = this.rt;
                 this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
                 this.Camera.Render();
@@ -377,11 +379,13 @@ namespace KronalUtils
                     }
                 }
             }
-
-            foreach (Part p in EditorLogic.fetch.ship)
+            if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
-                RestorePartShaders(p);
-            }
+	            foreach (Part p in EditorLogic.fetch.ship)
+	            {
+	                RestorePartShaders(p);
+	            }
+	        }
         }
 
         private void SaveTexture(String fileName)
@@ -458,7 +462,6 @@ namespace KronalUtils
             
             GenTexture(dir, width, height);
 
-            // And turning shadows back on here.
             QualitySettings.shadowDistance = storedShadowDistance;
             
         }
