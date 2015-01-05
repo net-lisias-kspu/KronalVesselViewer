@@ -16,14 +16,15 @@ namespace KronalUtils
         public ShaderMaterial MaterialBluePrint = new ShaderMaterial(KSP.IO.File.ReadAllText<KRSVesselShot>("blueprint"));
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
+        public string editorOrientation = "";
         public readonly IDictionary<string, ShaderMaterial> Effects;
         public int calculatedWidth = 1;
         public int calculatedHeight = 1;
         public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { 
             { "shadowVal", 0f }, { "shadowValPercent", 0f },
             {"imgPercent",4f},
-            {"bgR",1f},{"bgG",1f},{"bgB",1f},{"bgA",1f},//RGBA
-            {"bgR_",0f},{"bgG_",0.07f},{"bgB_",0.11f},{"bgA_",1f}//RGBA defaults //00406E 0,64,110 -> reduced due to color adjust shader
+            {"bgR",1f},{"bgG",1f},{"bgB",1f},{"bgA",1f},
+            {"bgR_",0f},{"bgG_",0.07f},{"bgB_",0.11f},{"bgA_",1f}
         };
         public Dictionary<string, bool> uiBoolVals = new Dictionary<string, bool> {
             {"canPreview",true},{"saveTextureEvent",false}
@@ -37,17 +38,17 @@ namespace KronalUtils
         internal Camera Camera { get; private set; }
         internal Vector3 direction;
         internal Vector3 position;
-        internal float storedShadowDistance; // keeps original shadow distance. Used to toggle shadows off during rendering.
-        internal bool EffectsAntiAliasing { get; set; }//consider obsolete?
+        internal float storedShadowDistance;
+        internal bool EffectsAntiAliasing { get; set; }
         internal bool Orthographic
         {
             get
             {
-                return this.Camera == this.cameras[0];//if this currently selected camera is the first camera then Orthographic is true
+                return this.Camera == this.cameras[0];
             }
             set
             {
-                this.Camera = this.cameras[value ? 0 : 1];//if setting to true use the first camera (which is ortho camera). if false use the non-ortho
+                this.Camera = this.cameras[value ? 0 : 1];
             }
         }
         internal VesselViewConfig Config { get; private set; }
@@ -100,6 +101,7 @@ namespace KronalUtils
             uiFloatVals["bgB"]=uiFloatVals["bgB_"];
             LoadShaders();
             UpdateShipBounds();
+            
 
             GameEvents.onPartAttach.Add(PartModified);
             GameEvents.onPartRemove.Add(PartModified);
@@ -109,6 +111,10 @@ namespace KronalUtils
         {
             GameEvents.onPartAttach.Remove(PartModified);
             GameEvents.onPartRemove.Remove(PartModified);
+        }
+        public void setFacility()
+        {   
+            editorOrientation = (EditorLogic.fetch.ship.shipFacility == EditorFacility.SPH ? "SPH" : "VAB");
         }
 
         private void SetupCameras()
@@ -130,16 +136,17 @@ namespace KronalUtils
         public void RotateShip(float degrees)
         {
             Vector3 rotateAxis;
+            if (editorOrientation != "SPH" && editorOrientation != "VAB") { setFacility(); }
             
-            if (HighLogic.LoadedScene == GameScenes.SPH)
+            if (editorOrientation == "SPH")
             {
                 Debug.Log(string.Format("Rotating in SPH: {0}", degrees));
-                rotateAxis = EditorLogic.startPod.transform.forward;
+                rotateAxis = EditorLogic.RootPart.transform.forward;
             }
             else
             {
                 Debug.Log(string.Format("Rotating in VAB: {0}", degrees));
-                rotateAxis = EditorLogic.startPod.transform.up;
+                rotateAxis = EditorLogic.RootPart.transform.up;
             }
 
             this.direction = Quaternion.AngleAxis(degrees, rotateAxis) * this.direction;
@@ -159,7 +166,7 @@ namespace KronalUtils
                     MonoBehaviour.print("[ERROR] " + this.GetType().Name + " : Failed to load " + shaderFilename);
                 }
             }
-        }        
+        }
 
         private void ReplacePartShaders(Part part)
         {
@@ -174,7 +181,7 @@ namespace KronalUtils
                 if (Materials.TryGetValue(mr.material.shader.name, out mat))
                 {
                     if (!MeshRendererLibrary.ContainsKey(mr))
-                    {
+                {
                         MeshRendererLibrary.Add(mr, mr.material.shader);
                     }
                     mr.material.shader = mat.shader;
@@ -183,13 +190,13 @@ namespace KronalUtils
                 {
                     MonoBehaviour.print("[Warning] " + this.GetType().Name + "No replacement for " + mr.material.shader + " in " + part + "/*/" + mr);
                 }
-            }
+                }
             if (!PartShaderLibrary.ContainsKey(part))
             {
                 PartShaderLibrary.Add(part, MeshRendererLibrary);
             }
         }
-        
+
         Dictionary<Part,Dictionary<MeshRenderer, Shader>> PartShaderLibrary = new Dictionary<Part,Dictionary<MeshRenderer,Shader>>();
 
         private void RestorePartShaders(Part part)
@@ -199,7 +206,7 @@ namespace KronalUtils
             
             Dictionary<MeshRenderer,Shader> MeshRendererLibrary;
             if (PartShaderLibrary.TryGetValue(part, out MeshRendererLibrary))
-            {
+        {
                 foreach (MeshRenderer mr in model.GetComponentsInChildren<MeshRenderer>())
                 {
                     Shader OldShader;
@@ -264,7 +271,8 @@ namespace KronalUtils
 
             this.Camera.transform.position = this.shipBounds.center;
 
-            if (HighLogic.LoadedScene == GameScenes.SPH)
+            //if (HighLogic.LoadedScene == GameScenes.SPH)
+            if (editorOrientation == "SPH")
             {
                 this.Camera.transform.rotation = Quaternion.AngleAxis(90, Vector3.right);
             }
@@ -273,7 +281,6 @@ namespace KronalUtils
                 this.Camera.transform.rotation = Quaternion.AngleAxis(0f, Vector3.right);
             }
 
-            // Apply angle Vector to camera.
             this.Camera.transform.Translate(minusDir * this.Camera.nearClipPlane);
 
             // Face camera to vehicle.
@@ -285,10 +292,9 @@ namespace KronalUtils
             var width = Vector3.Scale(binormal, this.shipBounds.size).magnitude;
             var depth = Vector3.Scale(minusDir, this.shipBounds.size).magnitude;
 
-            width += this.Config.procFairingOffset; // get the distance of fairing offset
-            depth += this.Config.procFairingOffset; // for the farClipPlane
+            width += this.Config.procFairingOffset;
+            depth += this.Config.procFairingOffset;
 
-            // Find distance from vehicle.
             float positionOffset = (this.shipBounds.size.magnitude - this.position.z) / (2f * Mathf.Tan(Mathf.Deg2Rad * this.Camera.fieldOfView / 2f));
 
             this.Camera.transform.Translate(new Vector3(this.position.x, this.position.y, -positionOffset));
@@ -339,13 +345,10 @@ namespace KronalUtils
             if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
                 this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-                //this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
                 this.Camera.targetTexture = this.rt;
                 this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
                 this.Camera.Render();
                 this.Camera.targetTexture = null;
-                //Graphics.Blit(this.rt, this.rt, MaterialColorAdjust.Material);
-                //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
                 foreach (var fx in Effects)
                 {
                     if (fx.Value.Enabled)
@@ -365,7 +368,9 @@ namespace KronalUtils
         {
             int fileWidth = this.rt.width;
             int fileHeight = this.rt.height;
+#if DEBUG
             Debug.Log(string.Format("KVV: SIZE: {0} x {1}", fileWidth, fileHeight));
+#endif
 
             Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
             
@@ -396,7 +401,8 @@ namespace KronalUtils
             return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
         }
         public void Execute() {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            //if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!((EditorLogic.RootPart) && (this.Ship != null)))
             {
                 return;
             }
@@ -406,7 +412,8 @@ namespace KronalUtils
 
         public void Explode()
         {
-            if (!EditorLogic.startPod || this.Ship == null)
+            //if (!EditorLogic.startPod || this.Ship == null)
+            if (!EditorLogic.RootPart || this.Ship == null)
             {
                 return;
             }
@@ -417,12 +424,13 @@ namespace KronalUtils
 
         public void Update(int width = -1, int height = -1)
         {
-            if (!EditorLogic.startPod || this.Ship == null)
+            //if (!EditorLogic.startPod || this.Ship == null)
+            if (!EditorLogic.RootPart || this.Ship == null)
             {
                 return;
             }
 
-            var dir = EditorLogic.startPod.transform.TransformDirection(this.direction);
+            var dir = EditorLogic.RootPart.transform.TransformDirection(this.direction);
 
             storedShadowDistance = QualitySettings.shadowDistance;
             QualitySettings.shadowDistance = (this.uiFloatVals["shadowVal"] < 0f ? 0f : this.uiFloatVals["shadowVal"]);
@@ -435,7 +443,7 @@ namespace KronalUtils
 
         internal Texture Texture()
         {
-            if (!((EditorLogic.startPod) && (this.Ship != null)))
+            if (!((EditorLogic.RootPart) && (this.Ship != null)))
             {
                 return null;
             }
