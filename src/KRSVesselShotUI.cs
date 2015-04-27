@@ -39,6 +39,14 @@ namespace KronalUtils
             GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
         }
 
+        private void Start()
+        {
+            if (KVVButton == null)
+            {
+                this.OnGUIAppLauncherReady();
+            }
+        }
+
         private void ConfigApplied()
         {
             ButtonMode(false);
