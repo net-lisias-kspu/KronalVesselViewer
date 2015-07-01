@@ -386,6 +386,10 @@ namespace KronalUtils
 	                RestorePartShaders(p);
 	            }
 	        }
+            if (uiBoolVals["saveTextureEvent"])
+            {
+                Resources.UnloadUnusedAssets();//fix memory leak?
+            }
         }
 
         private void SaveTexture(String fileName)
