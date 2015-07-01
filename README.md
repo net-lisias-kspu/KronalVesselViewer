@@ -1,4 +1,10 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) and featured in [Scott Manley's Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) 
+
+As Scene:
+* Scott Manley's [Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
+* [PC Gamer](http://www.pcgamer.com/the-best-kerbal-space-program-mods-2/)
+* [Fridge Magnet](https://www.reddit.com/r/KerbalSpaceProgram/comments/3akcf8/kerbal_fridge_magnets_103/) projects
+* Youtube: FrunfWorks [KVV How To](https://www.youtube.com/watch?v=_zbi8FL5B20)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
