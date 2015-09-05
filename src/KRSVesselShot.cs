@@ -386,6 +386,10 @@ namespace KronalUtils
 	                RestorePartShaders(p);
 	            }
 	        }
+            if (uiBoolVals["saveTextureEvent"])
+            {
+                Resources.UnloadUnusedAssets();//fix memory leak?
+            }
         }
 
         private void SaveTexture(String fileName)
@@ -417,6 +421,8 @@ namespace KronalUtils
             System.IO.File.WriteAllBytes(filename, bytes);
 
             Debug.Log(string.Format("KVV: Took screenshot to: {0}", filename));
+            screenShot = null;
+            bytes = null;
         }
         private static string MakeValidFileName(string name)
         {
