@@ -155,7 +155,6 @@ namespace KronalUtils
         //updated for simpflication
         private void StateToggle(bool toggleOn)
         {
-            //var p = EditorLogic.startPod;
             var p = EditorLogic.RootPart;
             if (toggleOn)
             {
