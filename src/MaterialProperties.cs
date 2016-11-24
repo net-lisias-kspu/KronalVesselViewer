@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +27,7 @@ namespace KronalUtils
             Action<TextureProperty> IfTexture = null);
 
         public abstract ShaderMaterialProperty Clone();
-        
+
         public sealed class FloatProperty : ShaderMaterialProperty
         {
             public float Value
@@ -57,7 +58,7 @@ namespace KronalUtils
 
             public override ShaderMaterialProperty Clone()
             {
-                return new FloatProperty(this.Material, this.Name, this.DisplayName, this.RangeMin, this.RangeMax);      
+                return new FloatProperty(this.Material, this.Name, this.DisplayName, this.RangeMin, this.RangeMax);
             }
         }
 
@@ -176,11 +177,32 @@ namespace KronalUtils
         }
 
 
-        public ShaderMaterial(string contents)
+        public ShaderMaterial(string fileName, string contentName)
             : this()
         {
-            /*
-            this.Material = new Material(contents);
+            Debug.Log("Enter ShaderMaterial, filename: " + fileName + "   contentName: " + contentName);
+            string contents;
+            try
+            {
+                this.Material = new Material(KVrUtilsCore.getShaderById(contentName));
+            } catch (Exception e)
+            {
+                Debug.Log("Error: " + e.ToString() + " creating material: " + fileName);
+                return;
+
+            }
+
+            try
+            {
+                contents = System.IO.File.ReadAllText(KSPUtil.ApplicationRootPath + "GameData/KronalUtils/Resources/" + fileName + ".shader");
+            } catch (Exception e)
+            {
+                Debug.Log("Error: " + e.ToString() + " reading file: " + fileName);
+                return;
+            }
+
+
+
             var p = @"Properties\s*\{[^\{\}]*(((?<Open>\{)[^\{\}]*)+((?<Close-Open>\})[^\{\}]*)+)*(?(Open)(?!))\}";
             var m = Regex.Match(contents, p, RegexOptions.Multiline | RegexOptions.IgnoreCase);
             if (!m.Success)
@@ -188,12 +210,12 @@ namespace KronalUtils
                 throw new Exception("Error parsing shader properties: " + this.Material.shader.name);
             }
             p = @"(?<name>\w*)\s*\(\s*""(?<displayname>[^""]*)""\s*,\s*(?<type>Float|Vector|Color|2D|Rect|Cube|Range\s*\(\s*(?<rangemin>[\d.]*)\s*,\s*(?<rangemax>[\d.]*)\s*\))\s*\)";
-            
-    */
+
+                
 #if DEBUG
             //Debug.Log(string.Format("KVV: ShaderMaterial1 " + m.Value));
 #endif
-            /*
+            
             foreach(Match match in Regex.Matches(m.Value, p))
             {
                 ShaderMaterialProperty prop;
@@ -220,7 +242,8 @@ namespace KronalUtils
                 this.properties.Add(prop);
                 this.propertiesByName[prop.Name] = prop;
             }
-            */
+            Debug.Log("Enter ShaderMaterial, filename: " + fileName + "   contentName: " + contentName + "   properties.count: " + properties.Count.ToString());
+   
         }
 
         public ShaderMaterial Clone()

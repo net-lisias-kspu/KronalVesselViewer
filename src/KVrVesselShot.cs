@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,19 +22,37 @@ namespace KronalUtils
             { "MaterialBluePrint", KSP.IO.File.ReadAllText<KVrVesselShot>("blueprint") },
         };*/
         //public KVrUtilsCore KVVCore = new KVrUtilsCore();
+        /*
         public Dictionary<string, string> KVrShaders = new Dictionary<string, string> {
-            { "MaterialFXAA", "KVV/Hidden/SlinDev/Desktop/PostProcessing/FXAA" },
-            { "MaterialColorAdjust", "KVV/Color Adjust" },
-            { "MaterialEdgeDetect", "KVV/Hidden/Edge Detect Normals2" },
+            { "MaterialFXAA", "Hidden/SlinDev/Desktop/PostProcessing/FXAA" },
+            { "MaterialColorAdjust", "Kronal/Color Adjust" },
+            { "MaterialEdgeDetect", "Hidden/Edge Detect Normals2" },
         };
-        public ShaderMaterial MaterialFXAA = new ShaderMaterial(KronalUtils.Properties.Resources.ShaderFXAA);
-        public ShaderMaterial MaterialColorAdjust = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("coloradjust"));
-        public ShaderMaterial MaterialEdgeDetect = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("edn2"));
+        */
+
+        //public ShaderMaterial MaterialFXAA = new ShaderMaterial(KronalUtils.Properties.Resources.ShaderFXAA);
+        //public ShaderMaterial MaterialColorAdjust = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("coloradjust"));
+        //public ShaderMaterial MaterialEdgeDetect = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("edn2"));
+
+        public ShaderMaterial MaterialFXAA; // = new ShaderMaterial("FXAA", "Hidden/SlinDev/Desktop/PostProcessing/FXAA");
+        public ShaderMaterial MaterialColorAdjust; // = new ShaderMaterial("ColorAdjust", "Kronal/Color Adjust");
+
+        public ShaderMaterial MaterialEdgeDetect; // = new ShaderMaterial("EdgeDetectNormalsColor", "Hidden/EdgeDetectColors");
+        public ShaderMaterial MaterialEdgeDetect1; // = new ShaderMaterial("ShaderEdgeDetectNormals1", "Hidden/Edge Detect Normals1");
+        public ShaderMaterial MaterialEdgeDetect2; // = new ShaderMaterial("ShaderEdgeDetectNormals2", "Hidden/Edge Detect Normals2");
+        public ShaderMaterial MaterialEdgeDetect3; // = new ShaderMaterial("ShaderEdgeDetectNormals3", "Hidden/Edge Detect Normals3");
+
+        public ShaderMaterial MaterialEdgeDetect4; // = new ShaderMaterial("edn", "Hidden/EdgeDetect");
+        public ShaderMaterial MaterialEdgeDetect5; // = new ShaderMaterial("edn2", "KVV/Hidden/Edge Detect Normals2");
+
+
         //public ShaderMaterial MaterialBluePrint = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("blueprint"));/**/
+
+
         private List<string> Shaders = new List<string>() { "edn", "cutoff", "diffuse", "bumped", "bumpedspecular", "specular", "unlit", "emissivespecular", "emissivebumpedspecular" };
         private Dictionary<string, Material> Materials;
         public string editorOrientation = "";//SPH|VAB
-        public readonly IDictionary<string, ShaderMaterial> Effects;
+        public IDictionary<string, ShaderMaterial> Effects;
         public int calculatedWidth = 1;
         public int calculatedHeight = 1;
         public Dictionary<string, float> uiFloatVals = new Dictionary<string, float> { 
@@ -102,12 +121,19 @@ namespace KronalUtils
         public KVrVesselShot()
         {
             SetupCameras();
+   
             this.Config = new VesselViewConfig();
             this.direction = Vector3.forward;
             this.Materials = new Dictionary<string, Material>();
+            LoadShaders();
             this.Effects = new Dictionary<string, ShaderMaterial>() {
                 {"Color Adjust",MaterialColorAdjust},
-                {"Edge Detect", MaterialEdgeDetect},
+                //{"Edge Detect", MaterialEdgeDetect},
+                //{"Edge Detect1", MaterialEdgeDetect1},
+                //{"Edge Detect2", MaterialEdgeDetect2},
+     //           {"Edge Detect3", MaterialEdgeDetect3},
+                //{"Edge Detect4", MaterialEdgeDetect4},
+                //{"Edge Detect5", MaterialEdgeDetect5},
                 //{"Blue Print", MaterialBluePrint},
                 {"FXAA", MaterialFXAA}
             };
@@ -115,15 +141,16 @@ namespace KronalUtils
             uiFloatVals["bgR"]=uiFloatVals["bgR_"];
             uiFloatVals["bgG"]=uiFloatVals["bgG_"];
             uiFloatVals["bgB"]=uiFloatVals["bgB_"];
-            LoadShaders();
+
             UpdateShipBounds();
             
 
             GameEvents.onPartAttach.Add(PartModified);
             GameEvents.onPartRemove.Add(PartModified);
+
         }
 
-        ~KVrVesselShot()
+         ~KVrVesselShot()
         {
             GameEvents.onPartAttach.Remove(PartModified);
             GameEvents.onPartRemove.Remove(PartModified);
@@ -172,15 +199,36 @@ namespace KronalUtils
             }
 
             this.direction = Quaternion.AngleAxis(degrees, rotateAxis) * this.direction;
-        }        
+        }
 
         private void LoadShaders()
         {
+             MaterialFXAA = new ShaderMaterial("FXAA", "Hidden/SlinDev/Desktop/PostProcessing/FXAA");
+             MaterialColorAdjust = new ShaderMaterial("ColorAdjust", "Kronal/Color Adjust");
+
+             MaterialEdgeDetect = new ShaderMaterial("EdgeDetectNormalsColor", "Hidden/EdgeDetectColors");
+             MaterialEdgeDetect1 = new ShaderMaterial("ShaderEdgeDetectNormals1", "Hidden/Edge Detect Normals1");
+             MaterialEdgeDetect2 = new ShaderMaterial("ShaderEdgeDetectNormals2", "Hidden/Edge Detect Normals2");
+             MaterialEdgeDetect3 = new ShaderMaterial("ShaderEdgeDetectNormals3", "Hidden/Edge Detect Normals3");
+
+             MaterialEdgeDetect4 = new ShaderMaterial("edn", "Hidden/EdgeDetect");
+             MaterialEdgeDetect5 = new ShaderMaterial("edn2", "KVV/Hidden/Edge Detect Normals2");
+
+
+            foreach (var s in BundleIndex.LoadedShaders)
+            {
+                var mat = new Material(s.Value);
+                Materials.Add(mat.shader.name, mat);
+                //Materials[mat.shader.name] = mat;
+            }
+            
+#if false
             foreach (var shaderFilename in Shaders)
             {
                 try
                 {
-                    var mat = new Material(KVrUtils.GetResourceString(shaderFilename));
+                    var mat = new Material(KVrUtilsCore.AssetIndex.gettShaderById(shaderFilename));
+                    Debug.Log("Material: " + shaderFilename + " loaded");
                     Materials[mat.shader.name] = mat;
                 }
                 catch
@@ -191,6 +239,7 @@ namespace KronalUtils
 #endif
                 }
             }
+#endif
         }
 
         private void ReplacePartShaders(Part part)
@@ -212,7 +261,7 @@ namespace KronalUtils
                 } else {
                     //MonoBehaviour.print("[Warning] " + this.GetType().Name + "No replacement for " + mr.material.shader + " in " + part + "/*/" + mr);
 #if DEBUG
-                    Debug.Log(string.Format("KVV: LoadShaders [Warning] " + this.GetType().Name + "No replacement for " + mr.material.shader + " in " + part + "/*/" + mr));
+                    Debug.Log(string.Format("KVV: LoadShaders [Warning] " + this.GetType().Name + " No replacement for " + mr.material.shader + " in " + part + "/*/" + mr));
 #endif
                 }
             }
@@ -356,8 +405,10 @@ namespace KronalUtils
             else
             {
                 this.Camera.aspect = (float) imageWidth / (float) imageHeight;
-            }
+            };
+
             if (this.rt) RenderTexture.ReleaseTemporary(this.rt);
+
             this.rt = RenderTexture.GetTemporary(imageWidth, imageHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
 
             int fileWidth = imageWidth;
@@ -370,6 +421,7 @@ namespace KronalUtils
 
             if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
+                if (this.rt) RenderTexture.ReleaseTemporary(this.rt);
                 this.rt = RenderTexture.GetTemporary(fileWidth, fileHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
                 this.Camera.targetTexture = this.rt;
                 this.Camera.depthTextureMode = DepthTextureMode.DepthNormals;
@@ -379,12 +431,19 @@ namespace KronalUtils
                 //Graphics.Blit(this.rt, this.rt, MaterialEdgeDetect.Material);
                 foreach (var fx in Effects)
                 {
-                    if (fx.Value.Enabled)
+
+                    if (fx.Value.Material != null)
                     {
-                        Graphics.Blit(this.rt, this.rt, fx.Value.Material);
+                        if (fx.Value.Enabled)
+                        {
+                            Graphics.Blit(this.rt, this.rt, fx.Value.Material);
+                        }
                     }
+                    else
+                        Debug.Log("fx.Value.Material is null: " + fx.Key);
                 }
             }
+
             if (uiBoolVals["canPreview"] || uiBoolVals["saveTextureEvent"])
             {
                 foreach (Part p in EditorLogic.fetch.ship)
@@ -392,6 +451,7 @@ namespace KronalUtils
                     RestorePartShaders(p);
                 }
             }
+
             if (uiBoolVals["saveTextureEvent"])
             {
                 Resources.UnloadUnusedAssets();//fix memory leak?
@@ -459,7 +519,7 @@ namespace KronalUtils
 
         }
 
-        public void Update(int width = -1, int height = -1)
+        public void UpdateVesselShot(int width = -1, int height = -1)
         {
             //if (!EditorLogic.startPod || this.Ship == null)
             if (!EditorLogic.RootPart || this.Ship == null)

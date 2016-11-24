@@ -42,7 +42,17 @@ namespace KronalUtils
             Debug.Log(string.Format("KVV: KVrEditorAxis Awake"));
 #endif
         }
-        void OnPostRender(Camera cameraArg)
+        public void OnEnable()
+        {
+            // register the callback when enabling object
+            Camera.onPostRender += MyPostRender;
+        }
+        public void OnDisable()
+        {
+            // remove the callback when disabling object
+            Camera.onPostRender -= MyPostRender;
+        }
+        void MyPostRender(Camera cameraArg)
         {
             if (!this.evo.CoMmarker.gameObject.activeInHierarchy) return;
 

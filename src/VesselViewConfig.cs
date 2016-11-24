@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using KAS;
 
 namespace KronalUtils
 {
@@ -49,8 +50,14 @@ namespace KronalUtils
 
         internal void Apply(Part part)
         {
-            if (!this.CanApply(part)) return;
-
+            if (!this.CanApply(part))
+            {
+                return;
+            }
+            if (Options == null)
+            {
+                return;
+            }
             foreach (var option in this.Options)
             {
                 if (option.valueActive)
@@ -91,6 +98,7 @@ namespace KronalUtils
         //constructor
         public VesselViewConfig()
         {
+            Debug.Log("VesselViewConfig");
             buildModList();
             this.positions = new Dictionary<Transform, Vector3>();
             this.visibility = new Dictionary<Renderer, bool>();
@@ -121,6 +129,7 @@ namespace KronalUtils
                     }
                 }
             };
+#if KAS
             if(hasMod("KAS")){
                 Config.Add(new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
                     Options = {
@@ -128,6 +137,17 @@ namespace KronalUtils
                     }
                 });
             }
+#endif
+           
+            Config.Add(new VesselElementViewOptions("Stock Fairings", CanApplyIfModule("ModuleProceduralFairing"))
+            {
+                Options = {
+                    new VesselElementViewOption("Offset", true, true, StockProcFairingExplode, false, 3f),
+                    new VesselElementViewOption("Hide", true, false, StockProcFairingHide, false),
+                }
+            });
+            
+#if KERAMZIT
             if (hasMod("ProceduralFairings"))
             {
                 Config.Add(new VesselElementViewOptions("Procedural Fairings", CanApplyIfModule("ProceduralFairingSide"))
@@ -139,9 +159,17 @@ namespace KronalUtils
                     }
                 });
             }
-            
+#endif
+#if false
             Config.Add(new VesselElementViewOptions("Struts", CanApplyIfType("StrutConnector")) {
                     Options = {
+                        new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
+                    }
+            });
+#endif
+            Config.Add(new VesselElementViewOptions("Struts", CanApplyIfModule("CModuleStrut"))
+            {
+                Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
             });
@@ -150,11 +178,14 @@ namespace KronalUtils
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
              });
+            Debug.Log("Config list contains: " + Config.Count.ToString());
         }
-
+        bool curState = false;
         //updated for simpflication
         private void StateToggle(bool toggleOn)
         {
+            if (toggleOn == curState)
+                return;
             var p = EditorLogic.RootPart;
             if (toggleOn)
             {
@@ -163,30 +194,42 @@ namespace KronalUtils
                 this.freezed.Clear();
                 this.procFairings.Clear();
             }
-            foreach (var t in p.GetComponentsInChildren<Transform>()){
-                if (toggleOn) { this.positions[t] = t.localPosition; }
-                else if ((!toggleOn) && this.positions.ContainsKey(t)) { t.localPosition = this.positions[t]; }
-            }
-            foreach (var r in p.GetComponentsInChildren<Renderer>())
+            if (p != null)
             {
-                if (toggleOn) { this.visibility[r] = r.enabled; }
-                else if ((!toggleOn) && this.visibility.ContainsKey(r)) { r.enabled = this.visibility[r]; }
-            }
-            foreach (var part in this.ship.Parts)
-            {
-                if (toggleOn) { 
-                    this.freezed[part] = part.frozen; 
-                }
-                else if ((!toggleOn) && this.freezed.ContainsKey(part)) { 
-                    part.frozen = this.freezed[part]; 
-                }
-
-                if (hasMod("ProceduralFairings"))
+                foreach (var t in p.GetComponentsInChildren<Transform>())
                 {
-                    this.proceduralFairingToggleState(toggleOn, part);
+                    if (toggleOn) { this.positions[t] = t.localPosition; }
+                    else if ((!toggleOn) && this.positions.ContainsKey(t)) { t.localPosition = this.positions[t]; }
+                }
+                foreach (var r in p.GetComponentsInChildren<Renderer>())
+                {
+                    if (toggleOn) { this.visibility[r] = r.enabled; }
+                    else if ((!toggleOn) && this.visibility.ContainsKey(r)) { r.enabled = this.visibility[r]; }
+                }
+            }
+            if (ship != null && ship.Parts != null)
+            {
+                foreach (var part in this.ship.Parts)
+                {
+                    if (toggleOn)
+                    {
+                        this.freezed[part] = part.frozen;
+                    }
+                    else if ((!toggleOn) && this.freezed.ContainsKey(part))
+                    {
+                        part.frozen = this.freezed[part];
+                    }
+
+                    if (hasMod("ProceduralFairings"))
+                    {
+                        this.proceduralFairingToggleState(toggleOn, part);
+                    }
+                    if (!toggleOn)
+                        StockProceduralFairingToggleState(toggleOn, part);
                 }
             }
             if (!toggleOn) { this.onRevert(); }
+            curState = toggleOn;
             //else { this.onSaveState(); }
         }
 
@@ -205,10 +248,12 @@ namespace KronalUtils
         public void Execute(IShipconstruct ship)
         {
             this.ship = ship;
-            StateToggle(false);//Revert();
+            if (curState)
+                StateToggle(false);//Revert();
             StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)
             {
+                Debug.Log("Execute, part: " + part.partInfo.title);
                 foreach (var c in this.Config)
                 {
                     c.Apply(part);
@@ -222,6 +267,7 @@ namespace KronalUtils
 
         private void proceduralFairingToggleState(Boolean toggleOn, Part part)
         {
+#if KERAMZIT
             if (part.Modules.Contains("ProceduralFairingSide") && hasMod("ProceduralFairings"))
             {
                 var module = part.Module<Keramzit.ProceduralFairingSide>();
@@ -237,6 +283,20 @@ namespace KronalUtils
                     module.shapeLock = false;
                 }
             }
+#endif
+        }
+        private void StockProceduralFairingToggleState(Boolean toggleOn, Part part)
+        {
+            Debug.Log("StockProceduralFairingToggleState");
+            if (part.Modules.Contains("ModuleProceduralFairing"))
+            {
+                Debug.Log("Part contains ModuleProceduralfairing, toggleOn: " + toggleOn.ToString());
+                var module = part.Module<ModuleProceduralFairing>();
+
+                foreach (var p in module.Panels)
+                    p.go.SetActive(!toggleOn);
+            }
+            fairingPanels = null;
         }
 
         private Func<Part, bool> CanApplyIfType(string typeName)
@@ -296,7 +356,7 @@ namespace KronalUtils
             if (module.isDecoupled) return;
             if (!module.staged) return; // don't explode if tweakable staging is false
             if (string.IsNullOrEmpty(module.explosiveNodeID)) return;
-            var an = module.explosiveNodeID == "srf" ? part.srfAttachNode : part.findAttachNode(module.explosiveNodeID);
+            var an = module.explosiveNodeID == "srf" ? part.srfAttachNode : part.FindAttachNode(module.explosiveNodeID);
             if (an == null || an.attachedPart == null) return;
             var distance = o.valueParam;
             if (part.name.Contains("FairingCone"))
@@ -321,7 +381,7 @@ namespace KronalUtils
             //MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
             var module = part.Module<ModuleDockingNode>();
             if (string.IsNullOrEmpty(module.referenceAttachNode)) return;
-            var an = part.findAttachNode(module.referenceAttachNode);
+            var an = part.FindAttachNode(module.referenceAttachNode);
             if (!an.attachedPart) return;
             var distance = o.valueParam;
             Part partToBeMoved;
@@ -365,11 +425,12 @@ namespace KronalUtils
 
         private void KASConnectorPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
+#if KAS
             if (hasMod("KAS"))
             {
                 var module = part.Module<KAS.KASModulePort>();//this creates KAS Dependancy.  
                 if (string.IsNullOrEmpty(module.attachNode)) return;
-                var an = part.findAttachNode(module.attachNode);
+                var an = part.FindAttachNode(module.attachNode);
                 if (!an.attachedPart) return;
                 var distance = o.valueParam;
                 Part partToBeMoved;
@@ -384,6 +445,28 @@ namespace KronalUtils
                 }
                 partToBeMoved.transform.Translate(module.portNode.forward * distance, Space.World);
             }
+#endif
+        }
+        public static List<ProceduralFairings.FairingPanel> fairingPanels = null;
+        public static float fairingPanelValueParam;
+        private void StockProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
+        {
+            //MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
+            Debug.Log("StockProcFairingExplode");
+            fairingPanels = new List<ProceduralFairings.FairingPanel>();
+            var module = part.Module<ModuleProceduralFairing>();
+            fairingPanelValueParam = o.valueParam;
+            foreach (var p in module.Panels)
+                fairingPanels.Add(p);
+        }
+
+        private void StockProcFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
+        {
+            MonoBehaviour.print("Hiding StockProcFairingHide Fairing: " + part.ToString());
+            var module = part.Module<ModuleProceduralFairing>();
+
+            foreach (var p in module.Panels)
+                p.go.SetActive(false);            
         }
 
         private void ProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)

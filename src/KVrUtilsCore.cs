@@ -12,9 +12,13 @@ namespace KronalUtils
     [KSPAddon(KSPAddon.Startup.EditorAny, true)]
     class KVrUtilsCore : MonoBehaviour
     {
-        public static BundleIndex AssetIndex = new BundleIndex();
+        public static BundleIndex AssetIndex;
         public static string ModPath = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString() + Path.DirectorySeparatorChar + "GameData" + Path.DirectorySeparatorChar, "KronalUtils");
         public static string SavePath = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots");
+        private void Awake()
+        {
+             AssetIndex = gameObject.AddComponent<BundleIndex>(); // new BundleIndex();
+        }
         public static string ModRoot()
         {
             return ModPath;
@@ -25,7 +29,7 @@ namespace KronalUtils
         }
         public static Shader getShaderById(string idIn)
         {
-            return AssetIndex.gettShaderById(idIn);
+            return AssetIndex.getShaderById(idIn);
         }
 
     }

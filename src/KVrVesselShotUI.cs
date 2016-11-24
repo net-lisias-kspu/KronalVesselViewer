@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace KronalUtils
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
     class KVrVesselShotUI : MonoBehaviour
     {
-        private KVrVesselShot control = new KVrVesselShot();
+        private KVrVesselShot control; // = new KVrVesselShot();
         bool mySoftLock = false;//not to be confused with EditorLogic.softLock
         private string inputLockIdent = "KVr-EditorLock";
         private Rect windowSize;
@@ -29,10 +29,15 @@ namespace KronalUtils
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedSceneIsEditor);
         }
 
-        public void Awake()
+        IEnumerator doInit()
         {
+            while (!KVrUtilsCore.AssetIndex.BundleLoaded)
+                yield return new WaitForSeconds(0.1f);
+            control = new KVrVesselShot();
+
             this.windowSize = new Rect(256f, 50f, 300f, Screen.height - 50f);
-            string[] configAppend = {"Part Config"};
+
+            string[] configAppend = { "Part Config" };
             this.shaderTabsNames = this.control.Effects.Keys.ToArray<string>();
             this.shaderTabsNames = this.shaderTabsNames.Concat(configAppend).ToArray();
             this.control.Config.onApply += ConfigApplied;
@@ -40,14 +45,20 @@ namespace KronalUtils
 
             //GameEvents.onGUIApplicationLauncherReady += OnGUIAppLauncherReady;
             GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
-        }
-
-        private void Start()
-        {
             if (KVrButton == null)
             {
                 this.OnGUIAppLauncherReady();
             }
+
+        }
+        public void Start()
+        {
+            StartCoroutine(doInit());
+        }
+
+        void Destroy()
+        {
+            control = null;
         }
 
         private void ConfigApplied()
@@ -92,9 +103,21 @@ namespace KronalUtils
         {
             if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f)
             {
-                this.control.Update((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
+                this.control.UpdateVesselShot((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
         }
+        public void LateUpdate()
+        {
+            if (VesselViewConfig.fairingPanels != null)
+            {
+                foreach (var p in VesselViewConfig.fairingPanels)
+                {
+                    p.SetExplodedView(VesselViewConfig.fairingPanelValueParam);
+                    p.SetTgtExplodedView(VesselViewConfig.fairingPanelValueParam);
+                }
+            }
+        }
+
         bool isMouseOver()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
         {
             Vector2 position = new Vector2(Input.mousePosition.x,
@@ -193,7 +216,7 @@ namespace KronalUtils
             if (GUILayout.Button("Screenshot"))
             {
                 control.uiBoolVals["saveTextureEvent"] = true;
-                this.control.Update();
+                this.control.UpdateVesselShot();
                 this.control.Execute();
             }
             GUILayout.EndHorizontal();
@@ -290,6 +313,7 @@ namespace KronalUtils
                 GUILayout.EndHorizontal();
                 return;
             }
+
             GUILayout.BeginHorizontal();
             this.control.Effects[name].Enabled = GUILayout.Toggle(this.control.Effects[name].Enabled, "Active");
             GUILayout.EndHorizontal();
@@ -438,6 +462,7 @@ namespace KronalUtils
 
         void onAppLaunchToggleOff()
         {
+            this.control.Config.Revert();
             EditorLogic.DestroyObject(this.axis);
             visible = false;
         }

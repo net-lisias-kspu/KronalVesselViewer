@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,9 @@ using KSPAssets;
 
 namespace KronalUtils
 {
-    class BundleIndex
+    class BundleIndex : MonoBehaviour
     {
+        
         //KSPAssets.AssetDefinition[] KVrShaders = KSPAssets.Loaders.AssetLoader.GetAssetDefinitionsWithType(KronalUtils.Properties.Resources.ShaderFXAA, typeof(Shader));
         /*
         public Dictionary<string, string> ShaderData = new Dictionary<string, string> { 
@@ -20,14 +22,14 @@ namespace KronalUtils
             { "MaterialBluePrint", KSP.IO.File.ReadAllText<KVrVesselShot>("blueprint") }, 
         };*/
         internal static Dictionary<string, Font> loadedFonts = new Dictionary<string, Font>();
-        internal static Dictionary<string, Shader> loadedShaders = new Dictionary<string, Shader>();
-        public Dictionary<string, string> ShaderData = new Dictionary<string, string> {
+       // internal static Dictionary<string, Shader> loadedShaders = new Dictionary<string, Shader>();
+        /*public Dictionary<string, string> ShaderData = new Dictionary<string, string> {
             { "MaterialFXAA", "KVV/Hidden/SlinDev/Desktop/PostProcessing/FXAA" },
             { "MaterialColorAdjust", "KVV/Color Adjust" },
-            { "MaterialEdgeDetect", "KVV/Hidden/Edge Detect Normals2" },
-        };
-        public Dictionary<string, KSPAssets.Loaders.AssetLoader> KVrShaders = new Dictionary<string, KSPAssets.Loaders.AssetLoader>();
-        public Dictionary<string, KSPAssets.Loaders.AssetLoader> KVrShaders2 = new Dictionary<string, KSPAssets.Loaders.AssetLoader>();
+            { "MaterialEdgeDetect", "Hidden/Edge Detect Normals2" },
+        };*/
+      //  public Dictionary<string, KSPAssets.Loaders.AssetLoader> KVrShaders = new Dictionary<string, KSPAssets.Loaders.AssetLoader>();
+      //  public Dictionary<string, KSPAssets.Loaders.AssetLoader> KVrShaders2 = new Dictionary<string, KSPAssets.Loaders.AssetLoader>();
         public BundleIndex()
         {
             /*
@@ -43,19 +45,98 @@ namespace KronalUtils
 
             InitShaders();
         }
+
+        public  bool BundleLoaded = false;
+        public static Dictionary<string, Shader> LoadedShaders = new Dictionary<string, Shader>();
+        private IEnumerator coroutine;
+
+
+        public void LoadBundle()
+        {
+            if (BundleLoaded)
+                return;
+            Debug.Log("LoadBundle");
+            coroutine = doLoadBundle();
+            
+            StartCoroutine(coroutine);
+        }
+        IEnumerator doLoadBundle()
+        { 
+            string bundleName;
+            Debug.Log("Application.platform: " + Application.platform.ToString());
+
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXPlayer:
+                    bundleName = "shaders.osx.bundle";
+                    break;
+
+                case RuntimePlatform.LinuxPlayer:
+                    bundleName = "shaders.linux.bundle";
+                    break;
+
+                case RuntimePlatform.WindowsPlayer:
+                    if (SystemInfo.graphicsDeviceVersion.Contains("OpenGL"))
+                    {
+                        Debug.Log("OpenGL found");
+                        bundleName = "shaders.windows.opengl.bundle";
+                    }
+                    else
+                    {
+                        Debug.Log("Not OpenGL");
+                        bundleName = "shaders.windows.bundle";
+                    }
+
+                    break;
+
+                default:
+                    bundleName = "shaders";
+                    break;
+            }
+
+            Debug.Log("Loading shader bundle file: " + bundleName);
+            WWW www = new WWW("file://" + KSPUtil.ApplicationRootPath + "GameData/KronalUtils/Resources/" + bundleName);
+            yield return www;
+            {
+                if (www.error != null)
+                    Debug.Log("Shaders bundle not found!");
+
+                AssetBundle bundle = www.assetBundle;
+
+                Shader[] shaders = bundle.LoadAllAssets<Shader>();
+
+                foreach (Shader shader in shaders)
+                {
+                    Debug.Log("Shader " + shader.name + " is loaded");
+                    LoadedShaders.Add(shader.name, shader);
+                }
+
+                bundle.Unload(false);
+                www.Dispose();
+
+                BundleLoaded = true;
+            }
+        }
+
+
         private void InitShaders()
         {
-
+            LoadBundle();
+#if false
 #if DEBUG
             Debug.Log(string.Format("KVV: InitShaders 1: {0}", KSPAssets.Loaders.AssetLoader.ApplicationRootPath));
 #endif
             
             string KVrPath = KVrUtilsCore.ModRoot();
+            Debug.Log("KVrPath: " + KVrPath);
+
             string KVrAssetPath = Path.GetDirectoryName(KVrPath + Path.DirectorySeparatorChar);
+            Debug.Log("KVrAssetPath: " + KVrAssetPath);
+            KVrAssetPath = "KronalUtils";
 #if DEBUG
             Debug.Log(string.Format("KVV: InitShaders 2 KVrPath{0} \n\t- Directory  Path.GetFileName( KVrAssetPath ...) {1} ", KVrPath, Path.GetFileName(KVrAssetPath + Path.DirectorySeparatorChar + "kvv")));//, String.Join("\n\t- ", System.IO.Directory.GetFiles(KVrPath))
 #endif
-            KSPAssets.AssetDefinition[] KVrShaders = KSPAssets.Loaders.AssetLoader.GetAssetDefinitionsWithType("KronalUtils/kvv", typeof(Shader));//path to kvv.ksp
+            KSPAssets.AssetDefinition[] KVrShaders = KSPAssets.Loaders.AssetLoader.GetAssetDefinitionsWithType(KVrAssetPath + "/kvv", typeof(Shader));//path to kvv.ksp
             if (KVrShaders == null || KVrShaders.Length == 0)
             {
                 Debug.Log(string.Format("KVV: Failed to load Asset Package KronalUtils/kvv.ksp in {0}.", KVrPath));
@@ -76,11 +157,13 @@ namespace KronalUtils
                 //KVrShaders[itKey.Key] = KSPAssets.Loaders.AssetLoader.GetAssetDefinitionsWithType(ShaderData[itKey.Key], typeof(UnityEngine.Shader));
                 // KSPAssets.Loaders.AssetLoader.GetAssetDefinitionsWithType(KronalUtils.Properties.Resources.ShaderFXAA, typeof(Shader));
             }*/
+#endif
         }
-        public Shader gettShaderById(string idIn)
+        public Shader getShaderById(string idIn)
         {
-            return (loadedShaders.ContainsKey(idIn) ? loadedShaders [idIn] : null);
+            return (LoadedShaders.ContainsKey(idIn) ? LoadedShaders [idIn] : null);
         }
+#if false
         private void ShadersLoaded(KSPAssets.Loaders.AssetLoader.Loader loader) // thanks moarDV - https://github.com/Mihara/RasterPropMonitor/blob/5c9fa8b259dd391892fe121724519413ccbb6b59/RasterPropMonitor/Core/UtilityFunctions.cs
         {
 #if DEBUG
@@ -171,6 +254,7 @@ namespace KronalUtils
 
             Debug.Log(string.Format("KVV: Failed to load shaders  - how did this callback execute?"));
         }
+#endif
     }
 
 }
