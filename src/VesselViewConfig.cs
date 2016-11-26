@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -15,12 +16,15 @@ namespace KronalUtils
         public Action<VesselElementViewOptions, VesselElementViewOption, Part> Apply { get; private set; }
         public bool valueActive;
         public float valueParam;
+        public float minValueParam;
+        public float maxValueParam;
+
         public string valueFormat;
 
         //constructor
         public VesselElementViewOption(string name, bool isToggle, bool hasParam,
             Action<VesselElementViewOptions, VesselElementViewOption, Part> apply,
-            bool defaultValueActive = false, float defaultValueParam = 0f,
+            bool defaultValueActive = false, float defaultValueParam = 0f, float minValue = 0f, float maxValue = 5f,
             string valueFormat = "F2")
         {
             this.Name = name;
@@ -30,6 +34,8 @@ namespace KronalUtils
             this.valueActive = defaultValueActive;
             this.valueParam = defaultValueParam;
             this.valueFormat = valueFormat;
+            this.minValueParam = minValue;
+            this.maxValueParam = maxValue;
         }
     }
 
@@ -86,7 +92,7 @@ namespace KronalUtils
             foreach (AssemblyLoader.LoadedAssembly a in AssemblyLoader.loadedAssemblies)
             {
                 string name = a.name;
-//UnityEngine.Debug.Log(string.Format("KVV: name: {0}", name));//future debubging
+                //UnityEngine.Debug.Log(string.Format("KVV: name: {0}", name));//future debubging
                 installedMods.Add(name);
             }
         }
@@ -124,29 +130,32 @@ namespace KronalUtils
                 },
                 new VesselElementViewOptions("Engine Fairings", CanApplyIfModule("ModuleJettison")) {
                     Options = {
-                        new VesselElementViewOption("Offset", true, true, EngineFairingExplode, true, 1f),
+                       // new VesselElementViewOption("Offset", true, true, EngineFairingExplode, true, 1f),
                         new VesselElementViewOption("Hide", true, false, EngineFairingHide, true),
                     }
                 }
             };
 #if KAS
-            if(hasMod("KAS")){
-                Config.Add(new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort")) {
+            if (hasMod("KAS"))
+            {
+                Config.Add(new VesselElementViewOptions("KAS Connector Ports", CanApplyIfModule("KASModulePort"))
+                {
                     Options = {
                         new VesselElementViewOption("Offset", true, true, KASConnectorPortExplode, true, 1f),
                     }
                 });
             }
 #endif
-           
+
             Config.Add(new VesselElementViewOptions("Stock Fairings", CanApplyIfModule("ModuleProceduralFairing"))
             {
                 Options = {
-                    new VesselElementViewOption("Offset", true, true, StockProcFairingExplode, false, 3f),
+                    new VesselElementViewOption("Opacity (0 = opaque, 1 = solid)", false, true, StockProcFairingSetOpacity, true, 1f, 0f, 1f),
+                    new VesselElementViewOption("Offset", true, true, StockProcFairingExplode, true, 1f, 0.1f, 1f),
                     new VesselElementViewOption("Hide", true, false, StockProcFairingHide, false),
                 }
             });
-            
+
 #if KERAMZIT
             if (hasMod("ProceduralFairings"))
             {
@@ -173,11 +182,12 @@ namespace KronalUtils
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
             });
-            Config.Add(new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp")) {
-                    Options = {
+            Config.Add(new VesselElementViewOptions("Launch Clamps", CanApplyIfModule("LaunchClamp"))
+            {
+                Options = {
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
-             });
+            });
             Debug.Log("Config list contains: " + Config.Count.ToString());
         }
         bool curState = false;
@@ -254,13 +264,18 @@ namespace KronalUtils
             foreach (var part in ship.Parts)
             {
                 Debug.Log("Execute, part: " + part.partInfo.title);
+                if (part.Modules.Contains("ModuleProceduralFairing"))
+                {
+                    StockProcFairing_st_idle_replacement(true, part);
+                }
                 foreach (var c in this.Config)
                 {
+
                     c.Apply(part);
                 }
                 part.frozen = true;
             }
-            
+
             this.onApply();
         }
 
@@ -285,12 +300,91 @@ namespace KronalUtils
             }
 #endif
         }
+
+        KerbalFSM fsm;
+        KFSMState saved_st_editor_idle = null;
+        KFSMState replacement_st_editor_idle = null;
+        private void StockProcFairing_st_idle_replacement(bool save, Part part)
+        {
+            var module = part.Module<ModuleProceduralFairing>();
+
+            MethodInfo[] m = part.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            FieldInfo[] fields = module.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (replacement_st_editor_idle == null)
+            {
+                replacement_st_editor_idle = new KFSMState("st_idle");
+                replacement_st_editor_idle.OnLateUpdate = delegate
+                {
+                    MouseFadeUpdate();
+                };
+            }
+
+            foreach (FieldInfo fi in fields)
+            {
+                if (fi.Name == "fsm")
+                {
+                    fsm = (KerbalFSM)fi.GetValue(module);
+                    FieldInfo[] fsmFields = fsm.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    foreach (FieldInfo fsmFi in fsmFields)
+                    {
+                        if (fsmFi.Name == "States")
+                        {
+                            List<KFSMState> States = (List<KFSMState>)fsmFi.GetValue(fsm);
+
+                            foreach (var s in States)
+                            {
+                                Debug.Log("KFSMState name: " + s.name);
+                                if (s.name == "st_idle")
+                                {
+                                    if (save)
+                                    {
+                                        saved_st_editor_idle = s;
+                                        States.Remove(s);
+                                        fsm.AddState(replacement_st_editor_idle);
+                                    }
+                                    else
+                                    {
+                                        States.Remove(s);
+                                        fsm.AddState(saved_st_editor_idle);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    fsm.StartFSM("st_idle");
+                    if (!save)
+                    {
+                        foreach (var p in module.Panels)
+                        {
+                            p.SetExplodedView(0);
+                            p.SetOpacity(1);
+                        }
+                    }
+                    break;
+                }
+
+            }
+        }
+
+        void MouseFadeUpdate()
+        {
+            // A do-nothing function, needed so that the st_idle can be replaced above
+
+        }
+
+
         private void StockProceduralFairingToggleState(Boolean toggleOn, Part part)
         {
             Debug.Log("StockProceduralFairingToggleState");
+
             if (part.Modules.Contains("ModuleProceduralFairing"))
             {
-                Debug.Log("Part contains ModuleProceduralfairing, toggleOn: " + toggleOn.ToString());
+
+                StockProcFairing_st_idle_replacement(toggleOn, part);
+
                 var module = part.Module<ModuleProceduralFairing>();
 
                 foreach (var p in module.Panels)
@@ -447,6 +541,13 @@ namespace KronalUtils
             }
 #endif
         }
+
+        float opacity = 1f;
+        private void StockProcFairingSetOpacity(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
+        {
+            opacity = o.valueParam;
+        }
+
         public static List<ProceduralFairings.FairingPanel> fairingPanels = null;
         public static float fairingPanelValueParam;
         private void StockProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
@@ -457,7 +558,13 @@ namespace KronalUtils
             var module = part.Module<ModuleProceduralFairing>();
             fairingPanelValueParam = o.valueParam;
             foreach (var p in module.Panels)
+            {
                 fairingPanels.Add(p);
+                p.SetExplodedView(VesselViewConfig.fairingPanelValueParam);
+                //p.SetTgtExplodedView(VesselViewConfig.fairingPanelValueParam);
+                p.SetOpacity(opacity);
+                //p.SetTgtOpacity(0);
+            }
         }
 
         private void StockProcFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
@@ -466,7 +573,7 @@ namespace KronalUtils
             var module = part.Module<ModuleProceduralFairing>();
 
             foreach (var p in module.Panels)
-                p.go.SetActive(false);            
+                p.go.SetActive(false);
         }
 
         private void ProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
@@ -496,7 +603,7 @@ namespace KronalUtils
                 //var right = EditorLogic.startPod.transform.right;
                 var forward = EditorLogic.RootPart.transform.forward;
                 var right = EditorLogic.RootPart.transform.right;
-                
+
                 //if (Vector3.Dot(nct.right, -(forward + right).normalized) > 0f) // original
                 if (Vector3.Dot(nct.right, -(forward).normalized) > 0f)
                 {

@@ -70,17 +70,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\ColorAdjust.shader" />
-    <None Include="Assets\EdgeDetectNormalsColor.shader" />
     <None Include="Assets\FXAA.shader" />
-    <None Include="Assets\ShaderEdgeDetectNormals1.shader" />
-    <None Include="Assets\ShaderEdgeDetectNormals2.shader" />
-    <None Include="Assets\ShaderEdgeDetectNormals3.shader" />
     <None Include="Assets\bumped.shader" />
     <None Include="Assets\bumpedspecular.shader" />
     <None Include="Assets\cutoff.shader" />
     <None Include="Assets\diffuse.shader" />
-    <None Include="Assets\edn.shader" />
-    <None Include="Assets\edn2.shader" />
     <None Include="Assets\emissivebumpedspecular.shader" />
     <None Include="Assets\emissivespecular.shader" />
     <None Include="Assets\fallback.shader" />

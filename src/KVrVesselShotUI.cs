@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
@@ -28,7 +29,7 @@ namespace KronalUtils
             //return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedSceneIsEditor);
         }
-
+        
         IEnumerator doInit()
         {
             while (!KVrUtilsCore.AssetIndex.BundleLoaded)
@@ -105,17 +106,8 @@ namespace KronalUtils
             {
                 this.control.UpdateVesselShot((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
-        }
-        public void LateUpdate()
-        {
-            if (VesselViewConfig.fairingPanels != null)
-            {
-                foreach (var p in VesselViewConfig.fairingPanels)
-                {
-                    p.SetExplodedView(VesselViewConfig.fairingPanelValueParam);
-                    p.SetTgtExplodedView(VesselViewConfig.fairingPanelValueParam);
-                }
-            }
+            // LateUpdate();
+
         }
 
         bool isMouseOver()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
@@ -416,12 +408,18 @@ namespace KronalUtils
                     if (o.HasParam)
                     {
                         var displayText = o.valueParam.ToString(o.valueFormat);
+                        GUILayout.Label("(current value: " + displayText + ")");
+                        GUILayout.FlexibleSpace();
+                        o.valueParam = GUILayout.HorizontalSlider(o.valueParam, o.minValueParam, o.maxValueParam, GUILayout.Width(153f));
+#if false
+                        var displayText = o.valueParam.ToString(o.valueFormat);
                         displayText = GUILayout.TextField(displayText);
                         float value;
                         if (float.TryParse(displayText, out value))
                         {
                             o.valueParam = value;
                         }
+#endif
                     }
                     GUILayout.EndHorizontal();
                 }

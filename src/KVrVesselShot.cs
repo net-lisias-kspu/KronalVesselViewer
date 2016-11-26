@@ -37,6 +37,7 @@ namespace KronalUtils
         public ShaderMaterial MaterialFXAA; // = new ShaderMaterial("FXAA", "Hidden/SlinDev/Desktop/PostProcessing/FXAA");
         public ShaderMaterial MaterialColorAdjust; // = new ShaderMaterial("ColorAdjust", "Kronal/Color Adjust");
 
+#if false
         public ShaderMaterial MaterialEdgeDetect; // = new ShaderMaterial("EdgeDetectNormalsColor", "Hidden/EdgeDetectColors");
         public ShaderMaterial MaterialEdgeDetect1; // = new ShaderMaterial("ShaderEdgeDetectNormals1", "Hidden/Edge Detect Normals1");
         public ShaderMaterial MaterialEdgeDetect2; // = new ShaderMaterial("ShaderEdgeDetectNormals2", "Hidden/Edge Detect Normals2");
@@ -44,7 +45,7 @@ namespace KronalUtils
 
         public ShaderMaterial MaterialEdgeDetect4; // = new ShaderMaterial("edn", "Hidden/EdgeDetect");
         public ShaderMaterial MaterialEdgeDetect5; // = new ShaderMaterial("edn2", "KVV/Hidden/Edge Detect Normals2");
-
+#endif
 
         //public ShaderMaterial MaterialBluePrint = new ShaderMaterial(KSP.IO.File.ReadAllText<KVrVesselShot>("blueprint"));/**/
 
@@ -206,14 +207,15 @@ namespace KronalUtils
              MaterialFXAA = new ShaderMaterial("FXAA", "Hidden/SlinDev/Desktop/PostProcessing/FXAA");
              MaterialColorAdjust = new ShaderMaterial("ColorAdjust", "Kronal/Color Adjust");
 
-             MaterialEdgeDetect = new ShaderMaterial("EdgeDetectNormalsColor", "Hidden/EdgeDetectColors");
+#if false
+            MaterialEdgeDetect = new ShaderMaterial("EdgeDetectNormalsColor", "Hidden/EdgeDetectColors");
              MaterialEdgeDetect1 = new ShaderMaterial("ShaderEdgeDetectNormals1", "Hidden/Edge Detect Normals1");
              MaterialEdgeDetect2 = new ShaderMaterial("ShaderEdgeDetectNormals2", "Hidden/Edge Detect Normals2");
              MaterialEdgeDetect3 = new ShaderMaterial("ShaderEdgeDetectNormals3", "Hidden/Edge Detect Normals3");
 
              MaterialEdgeDetect4 = new ShaderMaterial("edn", "Hidden/EdgeDetect");
              MaterialEdgeDetect5 = new ShaderMaterial("edn2", "KVV/Hidden/Edge Detect Normals2");
-
+#endif
 
             foreach (var s in BundleIndex.LoadedShaders)
             {
@@ -300,6 +302,9 @@ namespace KronalUtils
 
         internal void UpdateShipBounds()
         {
+
+            if (HighLogic.LoadedScene != GameScenes.EDITOR)
+                return;
             if ((this.Ship != null) && (this.Ship.Parts.Count > 0))
             {
                 this.shipBounds = CalcShipBounds();

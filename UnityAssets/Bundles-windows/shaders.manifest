@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 717445720
+CRC: 204108398
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5b8ae6079210bbc72bc4039270bf6118
+    Hash: 174f963da8c70fe9ccd9109945a373be
   TypeTreeHash:
     serializedVersion: 2
     Hash: 3d7b65a2e1f431f53edc6b4af43c8dd3
@@ -19,20 +19,14 @@ Assets:
 - Assets/emissivespecular.shader
 - Assets/emissivebumpedspecular.shader
 - Assets/ColorAdjust.shader
-- Assets/ShaderEdgeDetectNormals1.shader
 - Assets/outline.shader
 - Assets/fxaa3_9.cginc
 - Assets/bumpedspecular.shader
 - Assets/specular.shader
-- Assets/EdgeDetectNormalsColor.shader
 - Assets/fxaa3.shader
 - Assets/bumped.shader
-- Assets/ShaderEdgeDetectNormals2.shader
-- Assets/edn.shader
 - Assets/unlit.shader
-- Assets/edn2.shader
 - Assets/cutoff.shader
 - Assets/linesColorBlended.shader
 - Assets/fallback.shader
-- Assets/ShaderEdgeDetectNormals3.shader
 Dependencies: []
