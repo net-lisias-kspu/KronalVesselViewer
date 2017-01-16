@@ -92,7 +92,7 @@ namespace KronalUtils
             foreach (AssemblyLoader.LoadedAssembly a in AssemblyLoader.loadedAssemblies)
             {
                 string name = a.name;
-                //UnityEngine.Debug.Log(string.Format("KVV: name: {0}", name));//future debubging
+                log.debug(string.Format("Loading assembly: {0}", name));
                 installedMods.Add(name);
             }
         }
@@ -104,7 +104,7 @@ namespace KronalUtils
         //constructor
         public VesselViewConfig()
         {
-            Debug.Log("VesselViewConfig");
+            log.debug("VesselViewConfig");
             buildModList();
             this.positions = new Dictionary<Transform, Vector3>();
             this.visibility = new Dictionary<Renderer, bool>();
@@ -188,7 +188,7 @@ namespace KronalUtils
                         new VesselElementViewOption("Hide", true, false, PartHideRecursive, true),
                     }
             });
-            Debug.Log("Config list contains: " + Config.Count.ToString());
+            log.debug(string.Format("Config list contains: {0}", Config.Count));
         }
         bool curState = false;
         //updated for simpflication
@@ -263,7 +263,7 @@ namespace KronalUtils
             StateToggle(true);//SaveState();
             foreach (var part in ship.Parts)
             {
-                Debug.Log("Execute, part: " + part.partInfo.title);
+                log.debug(string.Format("Execute, part: {0}", part.partInfo.title));
                 if (part.Modules.Contains("ModuleProceduralFairing"))
                 {
                     StockProcFairing_st_idle_replacement(true, part);
@@ -335,7 +335,7 @@ namespace KronalUtils
 
                             foreach (var s in States)
                             {
-                                Debug.Log("KFSMState name: " + s.name);
+                                log.debug(string.Format("KFSMState name: {0}", s.name));
                                 if (s.name == "st_idle")
                                 {
                                     if (save)
@@ -378,7 +378,7 @@ namespace KronalUtils
 
         private void StockProceduralFairingToggleState(Boolean toggleOn, Part part)
         {
-            Debug.Log("StockProceduralFairingToggleState");
+            log.debug("StockProceduralFairingToggleState");
 
             if (part.Modules.Contains("ModuleProceduralFairing"))
             {
@@ -406,7 +406,7 @@ namespace KronalUtils
 
         private void PartHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Hiding Part " + part.ToString());
+            log.debug(string.Format("Hiding Part {0}", part));
             foreach (var r in part.GetComponents<Renderer>())
             {
                 r.enabled = false;
@@ -415,7 +415,7 @@ namespace KronalUtils
 
         private void PartHideRecursive(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Hiding Part " + part.ToString());
+            log.debug(string.Format("Hiding Part {0}", part));
             foreach (var r in part.GetComponentsInChildren<Renderer>())
             {
                 r.enabled = false;
@@ -424,7 +424,7 @@ namespace KronalUtils
 
         private void StackDecouplerExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Stack Decoupler: " + part.ToString());
+            log.debug(string.Format("Exploding Stack Decoupler: {0}", part));
             var module = part.Module<ModuleDecouple>();
             if (module.isDecoupled) return;
             if (!module.staged) return; // don't explode if tweakable staging is false
@@ -445,7 +445,7 @@ namespace KronalUtils
 
         private void RadialDecouplerExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Radial Decoupler: " + part.ToString());
+            log.debug(string.Format("Exploding Radial Decoupler: {0}", part));
             var module = part.Module<ModuleAnchoredDecoupler>();
             if (module.isDecoupled) return;
             if (!module.staged) return; // don't explode if tweakable staging is false
@@ -472,7 +472,7 @@ namespace KronalUtils
 
         private void DockingPortExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Docking Port: " + part.ToString());
+            log.debug(string.Format("Exploding Docking Port: {0}", part));
             var module = part.Module<ModuleDockingNode>();
             if (string.IsNullOrEmpty(module.referenceAttachNode)) return;
             var an = part.FindAttachNode(module.referenceAttachNode);
@@ -493,7 +493,7 @@ namespace KronalUtils
 
         private void EngineFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Engine Fairing: " + part.ToString());
+            log.debug(string.Format("Exploding Engine Fairing: {0}", part));
             var module = part.Module<ModuleJettison>();
             if (!module.isJettisoned)
             {
@@ -506,7 +506,7 @@ namespace KronalUtils
 
         private void EngineFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Hiding Engine Fairing: " + part.ToString());
+            log.debug(string.Format("Hiding Engine Fairing: {0}", part));
             var module = part.Module<ModuleJettison>();
             if (module.jettisonTransform)
             {
@@ -552,8 +552,7 @@ namespace KronalUtils
         public static float fairingPanelValueParam;
         private void StockProcFairingExplode(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            //MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
-            Debug.Log("StockProcFairingExplode");
+            log.debug(string.Format("Exploding Procedural Fairing: {0}", part));
             fairingPanels = new List<ProceduralFairings.FairingPanel>();
             var module = part.Module<ModuleProceduralFairing>();
             fairingPanelValueParam = o.valueParam;
@@ -569,7 +568,7 @@ namespace KronalUtils
 
         private void StockProcFairingHide(VesselElementViewOptions ol, VesselElementViewOption o, Part part)
         {
-            MonoBehaviour.print("Hiding StockProcFairingHide Fairing: " + part.ToString());
+            log.debug(string.Format("Hiding StockProcFairingHide Fairing: {0}", part));
             var module = part.Module<ModuleProceduralFairing>();
 
             foreach (var p in module.Panels)
@@ -580,9 +579,9 @@ namespace KronalUtils
         {
             if (hasMod("ProceduralFairings"))
             {
-                //MonoBehaviour.print("Exploding Procedural Fairing: " + part.ToString());
+                log.debug(string.Format("Exploding Procedural Fairing: {0}", part));
                 var nct = part.FindModelTransform("nose_collider");
-                //Debug.Log(string.Format("KVV: ProcFairingExplode {0}", nct.ToString()));
+                log.debug(string.Format("ProcFairingExplode {0}", nct));
                 if (!nct) return;
                 this.procFairingOffset = o.valueParam; // steal the offset value. to be added to vessel width for rendering.
                 //MeshFilter mf;
@@ -596,7 +595,7 @@ namespace KronalUtils
         {
             if (hasMod("ProceduralFairings"))
             {
-                //MonoBehaviour.print("Hiding Procedural Fairing: " + part.ToString());
+                log.debug(string.Format("Hiding Procedural Fairing: {0}", part));
                 var nct = part.FindModelTransform("nose_collider");
                 if (!nct) return;
                 //var forward = EditorLogic.startPod.transform.forward;

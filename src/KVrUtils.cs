@@ -1,15 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.IO;
 using UnityEngine;
-using KSP;
 
 namespace KronalUtils
 {
+    // Simple utility method for debugging output
+    public static class log {
+        [Conditional("DEBUG")]
+        public static void debug(string message) {
+            string template = "[KVV] {0}";
+            UnityEngine.Debug.Log(string.Format(template, message));
+        }
+
+        public static void warn(string message) {
+            string template = "[KVV] {0}";
+            UnityEngine.Debug.LogWarning(string.Format(template, message));
+        }
+
+        public static void error(string message) {
+            string template = "[KVV] {0}";
+            UnityEngine.Debug.LogError(string.Format(template, message));
+        }
+    }
+
+
     static class KRSHelper
     {
         public static T Module<T>(this Part part) where T : PartModule
@@ -33,7 +49,7 @@ namespace KronalUtils
             var stopwatch = e.Value;
             stopwatch.Stop();
             TimeSpan ts = stopwatch.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:000}",
+            string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:000}",
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds);
             //MonoBehaviour.print("[DEBUG] Event: " + name + "   DT: " + elapsedTime);

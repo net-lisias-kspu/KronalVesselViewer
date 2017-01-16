@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using UnityEngine;
 
 namespace KronalUtils
@@ -38,9 +34,7 @@ namespace KronalUtils
             CreateLineMaterial();
             this.evo = (EditorVesselOverlays)GameObject.FindObjectOfType(typeof(EditorVesselOverlays));
 
-#if DEBUG
-            Debug.Log(string.Format("KVV: KVrEditorAxis Awake"));
-#endif
+            log.debug(string.Format("KVrEditorAxis Awake"));
         }
         public void OnEnable()
         {

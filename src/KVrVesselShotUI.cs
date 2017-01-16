@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
 
@@ -284,7 +282,7 @@ namespace KronalUtils
             GUILayout.Space(1f);
             String disW = Math.Floor((control.uiFloatVals["imgPercent"] +1) * control.calculatedWidth).ToString();
             String disH = Math.Floor((control.uiFloatVals["imgPercent"] + 1) * control.calculatedHeight).ToString();
-            GUILayout.Label(String.Format("{0:0.#}", this.control.uiFloatVals["imgPercent"].ToString("F")) + "\n" + disW + " x " + disH, GUILayout.Width(110f));
+            GUILayout.Label(string.Format("{0:0.#}", this.control.uiFloatVals["imgPercent"].ToString("F")) + "\n" + disW + " x " + disH, GUILayout.Width(110f));
             control.uiFloatVals["imgPercent"] = control.uiFloatVals["imgPercent"] + 1;
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
@@ -431,9 +429,7 @@ namespace KronalUtils
 
         void OnGUIAppLauncherReady()
         {
-#if DEBUG
-            Debug.Log(string.Format("KVV: OnGUIAppLauncherReady {0}", KSP.UI.Screens.ApplicationLauncher.Ready.ToString()));
-#endif
+            log.debug(string.Format("OnGUIAppLauncherReady {0}", KSP.UI.Screens.ApplicationLauncher.Ready));
             if (KSP.UI.Screens.ApplicationLauncher.Ready)
             {
                 
@@ -469,9 +465,7 @@ namespace KronalUtils
 
         void OnDestroy()
         {
-#if DEBUG
-            Debug.Log(string.Format("KVV: OnDestroy"));
-#endif
+            log.debug("OnDestroy");
             GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             if (this.axis != null)
                 EditorLogic.DestroyObject(this.axis);
