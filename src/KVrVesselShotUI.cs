@@ -291,6 +291,12 @@ namespace KronalUtils
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            GUILayout.Label("Distance", GUILayout.Width(68f));
+            GUILayout.Space(1f);
+            GUILayout.Label(control.uiFloatVals["distance"].ToString("F"), GUILayout.Width(50f));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             this.shaderTabCurrent = GUILayout.Toolbar(this.shaderTabCurrent, this.shaderTabsNames);
             GUILayout.EndHorizontal();
             
