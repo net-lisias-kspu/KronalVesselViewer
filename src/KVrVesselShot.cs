@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using KSP;
-using KSPAssets;
-
 
 namespace KronalUtils
 {
@@ -185,17 +179,13 @@ namespace KronalUtils
             //if (HighLogic.LoadedScene == GameScenes.SPH)
             if (editorOrientation == "SPH")
             {
-#if DEBUG
-                Debug.Log(string.Format("Rotating in SPH: {0}", degrees));
-#endif
+                log.debug(string.Format("Rotating in SPH: {0}", degrees));
                 //rotateAxis = EditorLogic.startPod.transform.forward;
                 rotateAxis = EditorLogic.RootPart.transform.forward;
             }
             else
             {
-#if DEBUG
-                Debug.Log(string.Format("Rotating in VAB: {0}", degrees));
-#endif
+                log.debug(string.Format("Rotating in VAB: {0}", degrees));
                 //rotateAxis = EditorLogic.startPod.transform.up;
                 rotateAxis = EditorLogic.RootPart.transform.up;
             }
@@ -222,7 +212,7 @@ namespace KronalUtils
             {
                 var mat = new Material(s.Value);
                 Materials.Add(mat.shader.name, mat);
-                //Materials[mat.shader.name] = mat;
+                log.debug(string.Format("Found shader: {0}", mat.shader.name));
             }
             
 #if false
@@ -231,15 +221,12 @@ namespace KronalUtils
                 try
                 {
                     var mat = new Material(KVrUtilsCore.AssetIndex.gettShaderById(shaderFilename));
-                    Debug.Log("Material: " + shaderFilename + " loaded");
+                    log.debug(string.Format("Material: {0} loaded", shaderFilename));
                     Materials[mat.shader.name] = mat;
                 }
                 catch
                 {
-                    //MonoBehaviour.print("[ERROR] " + this.GetType().Name + " : Failed to load " + shaderFilename);
-#if DEBUG
-                    Debug.Log(string.Format("KVV: LoadShaders [ERROR] " + this.GetType().Name + " : Failed to load " + shaderFilename));
-#endif
+                    log.error(string.Format("LoadShaders {0} : Failed to load {1}", this.GetType().Name, shaderFilename));
                 }
             }
 #endif
@@ -255,17 +242,15 @@ namespace KronalUtils
             foreach (MeshRenderer mr in model.GetComponentsInChildren<MeshRenderer>())
             {
                 Material mat;
-                if (Materials.TryGetValue(mr.material.shader.name, out mat))
+                Materials.TryGetValue(mr.material.shader.name, out mat);
+                if (mat)
                 {
                     if (!MeshRendererLibrary.ContainsKey(mr)) {
                         MeshRendererLibrary.Add(mr, mr.material.shader);
                     }
                     mr.material.shader = mat.shader;
                 } else {
-                    //MonoBehaviour.print("[Warning] " + this.GetType().Name + "No replacement for " + mr.material.shader + " in " + part + "/*/" + mr);
-#if DEBUG
-                    Debug.Log(string.Format("KVV: LoadShaders [Warning] " + this.GetType().Name + " No replacement for " + mr.material.shader + " in " + part + "/*/" + mr));
-#endif
+                    log.warn(string.Format("LoadShaders {0} No replacement for {1} in {2}/*/{3}", this.GetType().Name, mr.material.shader, part, mr));
                 }
             }
             if (!PartShaderLibrary.ContainsKey(part))
@@ -447,7 +432,7 @@ namespace KronalUtils
                         }
                     }
                     else
-                        Debug.Log("fx.Value.Material is null: " + fx.Key);
+                        log.debug(string.Format("fx.Value.Material is null: {0}", fx.Key));
                 }
             }
 
@@ -469,9 +454,7 @@ namespace KronalUtils
         {
             int fileWidth = this.rt.width;
             int fileHeight = this.rt.height;
-#if DEBUG
-            Debug.Log(string.Format("KVV: SIZE: {0} x {1}", fileWidth, fileHeight));
-#endif
+            log.debug(string.Format("SIZE: {0} x {1}", fileWidth, fileHeight));
 
             Texture2D screenShot = new Texture2D(fileWidth, fileHeight, TextureFormat.ARGB32, false);
             
@@ -494,7 +477,7 @@ namespace KronalUtils
             } while(File.Exists(filename));
             System.IO.File.WriteAllBytes(filename, bytes);
 
-            Debug.Log(string.Format("KVV: Took screenshot to: {0}", filename));
+            log.debug(string.Format("Took screenshot to: {0}", filename));
             screenShot = null;
             bytes = null;
         }

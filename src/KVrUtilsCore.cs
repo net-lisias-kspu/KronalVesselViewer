@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using UnityEngine;
-using KSP;
-using KSPAssets;
 
 namespace KronalUtils
 {
@@ -13,8 +7,8 @@ namespace KronalUtils
     class KVrUtilsCore : MonoBehaviour
     {
         public static BundleIndex AssetIndex;
-        public static string ModPath = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString() + Path.DirectorySeparatorChar + "GameData" + Path.DirectorySeparatorChar, "KronalUtils");
-        public static string SavePath = Path.Combine(System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots");
+        public static string ModPath = Path.Combine(Directory.GetParent(KSPUtil.ApplicationRootPath).ToString() + Path.DirectorySeparatorChar + "GameData" + Path.DirectorySeparatorChar, "KronalUtils");
+        public static string SavePath = Path.Combine(Directory.GetParent(KSPUtil.ApplicationRootPath).ToString(), "Screenshots");
         private void Awake()
         {
              AssetIndex = gameObject.AddComponent<BundleIndex>(); // new BundleIndex();

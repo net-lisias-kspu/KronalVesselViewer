@@ -107,7 +107,7 @@ namespace KerbalStuffVersion_BOM
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                log.error(e.Message);
                 return null;
             }
             finally

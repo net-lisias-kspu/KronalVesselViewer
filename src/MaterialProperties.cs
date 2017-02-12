@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -180,14 +177,14 @@ namespace KronalUtils
         public ShaderMaterial(string fileName, string contentName)
             : this()
         {
-            Debug.Log("Enter ShaderMaterial, filename: " + fileName + "   contentName: " + contentName);
+            log.debug(string.Format("Enter ShaderMaterial, filename: {0}   contentName: {1}", fileName, contentName));
             string contents;
             try
             {
                 this.Material = new Material(KVrUtilsCore.getShaderById(contentName));
             } catch (Exception e)
             {
-                Debug.Log("Error: " + e.ToString() + " creating material: " + fileName);
+                log.error(string.Format("{0} creating material: {1}", e, fileName));
                 return;
 
             }
@@ -197,7 +194,7 @@ namespace KronalUtils
                 contents = System.IO.File.ReadAllText(KSPUtil.ApplicationRootPath + "GameData/KronalUtils/Resources/" + fileName + ".shader");
             } catch (Exception e)
             {
-                Debug.Log("Error: " + e.ToString() + " reading file: " + fileName);
+                log.error(string.Format("{0} reading file: {1}", e, fileName));
                 return;
             }
 
@@ -207,15 +204,12 @@ namespace KronalUtils
             var m = Regex.Match(contents, p, RegexOptions.Multiline | RegexOptions.IgnoreCase);
             if (!m.Success)
             {
-                throw new Exception("Error parsing shader properties: " + this.Material.shader.name);
+                throw new Exception(string.Format("Error parsing shader properties: {0}", this.Material.shader.name));
             }
             p = @"(?<name>\w*)\s*\(\s*""(?<displayname>[^""]*)""\s*,\s*(?<type>Float|Vector|Color|2D|Rect|Cube|Range\s*\(\s*(?<rangemin>[\d.]*)\s*,\s*(?<rangemax>[\d.]*)\s*\))\s*\)";
 
-                
-#if DEBUG
-            //Debug.Log(string.Format("KVV: ShaderMaterial1 " + m.Value));
-#endif
-            
+            log.debug(string.Format("ShaderMaterial1 {0}", m.Value));
+
             foreach(Match match in Regex.Matches(m.Value, p))
             {
                 ShaderMaterialProperty prop;
@@ -242,8 +236,8 @@ namespace KronalUtils
                 this.properties.Add(prop);
                 this.propertiesByName[prop.Name] = prop;
             }
-            Debug.Log("Enter ShaderMaterial, filename: " + fileName + "   contentName: " + contentName + "   properties.count: " + properties.Count.ToString());
-   
+            log.debug(string.Format("Enter ShaderMaterial, filename: {0} contentName: {1} properties.count: {2}", fileName, contentName, properties.Count));
+
         }
 
         public ShaderMaterial Clone()
