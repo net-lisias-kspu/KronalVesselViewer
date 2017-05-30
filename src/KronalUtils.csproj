@@ -100,26 +100,25 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\KSP.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\KSP.app\Contents\Resources\Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="KAS">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\GameData\KAS\Plugins\KAS.dll</HintPath>
-    </Reference>
-    <Reference Include="KSPAssets">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\KSP.app\Contents\Resources\Data\Managed\KSPAssets.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\GameData\KAS\Plugins\KAS.dll</HintPath>
     </Reference>
     <Reference Include="ProceduralFairings">
-      <HintPath>..\..\..\Downloads\ProcFairings_3.20\GameData\ProceduralFairings\ProceduralFairings.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\GameData\ProceduralFairings\ProceduralFairings.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\System.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\KSP.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\Library\Application Support\Steam\SteamApps\common\Kerbal Space Program\KSP.app\Contents\Resources\Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -137,8 +136,12 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>start /D D:\Users\jbb\github\KronalVesselViewer /WAIT deploy.bat $(ConfigurationName)
+
+if $(ConfigurationName) == Release (
+start /D  D:\Users\jbb\github\KronalVesselViewer  /WAIT buildRelease.bat $(ConfigurationName)
+)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

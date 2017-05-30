@@ -21,6 +21,11 @@ Beta-3	Bug fixes
 		Added bundle files for all environments (Window, Windows OpenGL, OSX and Linux)
 		Removed engine fairing explode option
 
+0.0.*
+	Logging overhaul for consistency
+	Distance label in UI
+:x
+
 
 ==========================================
 
