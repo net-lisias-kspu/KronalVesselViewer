@@ -27,7 +27,7 @@
 	int i2 = 0;
 	string s;
 
-	string versionfile =  @"D:\Users\jbb\github\ksp-kronalutils\KronalVesselViewer.version";
+	string versionfile =  @"D:\Users\jbb\github\KronalVesselViewer\KronalVesselViewer.version";
 	if (!File.Exists(versionfile))
 	{
 		Write("File: " + versionfile + " missing\n");		

@@ -50,10 +50,10 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyFileVersion1.cs">
+    <Compile Include="AssemblyVersion.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>AssemblyFileVersion.tt</DependentUpon>
+      <DependentUpon>AssemblyVersion.tt</DependentUpon>
     </Compile>
     <Compile Include="BundleIndex.cs" />
     <Compile Include="KVrUtilsCore.cs" />
@@ -99,11 +99,13 @@
     <None Include="Resources\ShaderFXAA.shader" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.3.1_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.3.1_dev\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="KAS">
       <HintPath>R:\KSP_1.3.0_dev\GameData\KAS\Plugins\KAS.dll</HintPath>
@@ -114,17 +116,19 @@
     <Reference Include="System">
       <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\System.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.3.1_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>R:\KSP_1.3.0_dev\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.3.1_dev\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AssemblyFileVersion.tt">
+    <Content Include="AssemblyVersion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyFileVersion1.cs</LastGenOutput>
+      <LastGenOutput>AssemblyVersion.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +137,11 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
-    </PreBuildEvent>
+set textTemplatingPath="%25ProgramFiles(x86)%25\Microsoft Visual Studio\2017\Community\Common7\IDE \texttransform.exe"
+
+
+
+%25textTemplatingPath%25 "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>start /D D:\Users\jbb\github\KronalVesselViewer /WAIT deploy.bat $(ConfigurationName)

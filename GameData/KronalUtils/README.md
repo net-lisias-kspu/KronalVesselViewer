@@ -24,7 +24,9 @@ Beta-3	Bug fixes
 0.0.*
 	Logging overhaul for consistency
 	Distance label in UI
-:x
+
+0.0.8
+		Updated for KSP 1.3.1
 
 
 ==========================================
