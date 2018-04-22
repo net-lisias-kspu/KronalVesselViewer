@@ -4,6 +4,9 @@ using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
 
+using ClickThroughFix;
+using ToolbarControl_NS;
+
 namespace KronalUtils
 {
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
@@ -19,7 +22,9 @@ namespace KronalUtils
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
         private GUIStyle guiStyleButtonAlert;
-        private KSP.UI.Screens.ApplicationLauncherButton KVrButton;
+        //private KSP.UI.Screens.ApplicationLauncherButton KVrButton;
+        ToolbarControl toolbarControl;
+
         private bool visible;
         private KVrEditorAxis axis;
         private bool IsOnEditor()
@@ -42,12 +47,9 @@ namespace KronalUtils
             this.control.Config.onApply += ConfigApplied;
             this.control.Config.onRevert += ConfigReverted;
 
-            //GameEvents.onGUIApplicationLauncherReady += OnGUIAppLauncherReady;
-            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
-            if (KVrButton == null)
-            {
-                this.OnGUIAppLauncherReady();
-            }
+
+            this.OnGUIAppLauncherReady();
+
 
         }
         public void Start()
@@ -159,7 +161,7 @@ namespace KronalUtils
             }
             if (visible) 
             {
-                this.windowSize = GUILayout.Window(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
+                this.windowSize = ClickThruBlocker.GUILayoutWindow(GetInstanceID(), this.windowSize, GUIWindow, "Kronal Vessel Viewer", HighLogic.Skin.window);
             }
 
             if (Event.current.type == EventType.Repaint)
@@ -433,24 +435,21 @@ namespace KronalUtils
             GUILayout.EndScrollView();
         }
 
+        internal const string MODID = "KronalVesselViewer_NS";
+        internal const string MODNAME = "Kronal Vessel Viewer";
         void OnGUIAppLauncherReady()
         {
-            log.debug(string.Format("OnGUIAppLauncherReady {0}", KSP.UI.Screens.ApplicationLauncher.Ready));
-            if (KSP.UI.Screens.ApplicationLauncher.Ready)
-            {
-                
-                KVrButton = ApplicationLauncher.Instance.AddModApplication(
-                    onAppLaunchToggleOn,
+            toolbarControl = gameObject.AddComponent<ToolbarControl>();
+            toolbarControl.AddToAllToolbars(onAppLaunchToggleOn,
                     onAppLaunchToggleOff,
-                    DummyVoid,
-                    DummyVoid,
-                    DummyVoid,
-                    DummyVoid,
-                    KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
-                    (Texture)GameDatabase.Instance.GetTexture("KronalUtils/Textures/icon_button", false));
-                control.setFacility();
+                KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
+                MODID,
+                "flightPlanButton",
+                "KronalUtils/Textures/icon_button-38",
+                "KronalUtils/Textures/icon_button-24",
+                MODNAME
+            );
 
-            }
         }
 
         void onAppLaunchToggleOn()
@@ -476,8 +475,8 @@ namespace KronalUtils
             if (this.axis != null)
                 EditorLogic.DestroyObject(this.axis);
 
-            if (KVrButton != null)
-                KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication(KVrButton);
+            toolbarControl.OnDestroy();
+            Destroy(toolbarControl);
 
             Resources.UnloadUnusedAssets();//fix memory leak?
         }

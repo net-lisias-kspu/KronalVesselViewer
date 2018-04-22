@@ -27,7 +27,11 @@ Beta-3	Bug fixes
 
 0.0.8
 		Updated for KSP 1.3.1
-
+0.0.9
+	Updated for KSP 1.4.1
+	Added support for the ClickthroughBlocker
+	Added support for the ToolbarController
+	Renamed release directory to KronalVesselViewer
 
 ==========================================
 
