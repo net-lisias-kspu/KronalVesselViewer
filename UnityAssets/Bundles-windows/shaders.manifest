@@ -1,0 +1,32 @@
+ManifestFileVersion: 0
+CRC: 2458440813
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6ae0f9aa0a16740ed5644a2fddaf5458
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: ce474e4a8b2e728b767e51cbbce77a69
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 109
+  Script: {instanceID: 0}
+Assets:
+- Assets/FXAA.shader
+- Assets/diffuse.shader
+- Assets/emissivespecular.shader
+- Assets/emissivebumpedspecular.shader
+- Assets/ColorAdjust.shader
+- Assets/outline.shader
+- Assets/fxaa3_9.cginc
+- Assets/bumpedspecular.shader
+- Assets/specular.shader
+- Assets/fxaa3.shader
+- Assets/bumped.shader
+- Assets/unlit.shader
+- Assets/cutoff.shader
+- Assets/linesColorBlended.shader
+- Assets/fallback.shader
+Dependencies: []

@@ -1,10 +1,41 @@
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view) 
+Linuxgurugamer's Fork
 
-As Scene:
-* Scott Manley's [Video](https://www.youtube.com/watch?v=Y9csr64ghh4)
-* [PC Gamer](http://www.pcgamer.com/the-best-kerbal-space-program-mods-2/)
-* [Fridge Magnet](https://www.reddit.com/r/KerbalSpaceProgram/comments/3akcf8/kerbal_fridge_magnets_103/) projects
-* Youtube: FrunfWorks [KVV How To](https://www.youtube.com/watch?v=_zbi8FL5B20)
+Beta-1	Initial beta for 1.2.1
+
+Beta-2	Initial public beta 
+
+Beta-3	Bug fixes
+		Stuts are now hiding
+		Stock fairings now work properly (ie:  offset & hide)
+		Lights of the VAB are an unavoidable side effect of the way this works.  I suggest you try downloading LightsOut, and turn off the VAB lights when you don't want the reflections
+		Shadows are either on or off.  I'll change it to be a toggle later
+		Ground shadow again a side effect of the way the mod works
+
+0.0.6	First non-beta release
+		Fixed null ref when going into flight
+		Added support for stock fairings exploding and opacity (some dirty Reflection code)
+		Added .version file
+		Added version info into Assembly info
+		Converted numeric inputs into sliders on config screens
+		Converted shaders into bundle files
+		Added bundle files for all environments (Window, Windows OpenGL, OSX and Linux)
+		Removed engine fairing explode option
+
+0.0.*
+	Logging overhaul for consistency
+	Distance label in UI
+
+0.0.8
+		Updated for KSP 1.3.1
+0.0.9
+	Updated for KSP 1.4.1
+	Added support for the ClickthroughBlocker
+	Added support for the ToolbarController
+	Renamed release directory to KronalVesselViewer
+
+==========================================
+
+Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
 
 Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
@@ -19,6 +50,18 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 ==========================================
 
 ### Bigorangemachine's Fork
+
+#### v0.0.4 - 0.90.0 Patch
+* Includes [Git fingerboxes](https://github.com/fingerboxes) patch for in-game rendering glitches & other weirdness (unconfirmed bug)
+* Thanks to KSP-IRC: TaranisElsu for helping me find the solution to the VAB/SPH facitilty detection
+* Thanks to [Git m4v](https://github.com/m4v) (RCS Build Assist) again for keeping their code public so I could reference the click through code
+* To Install:
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (only .DLL changed but be sure replace everything)
+  * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS.dll](https://github.com/KospY/KAS)
+  * Download and Build with [ProceduralFairings.dll](https://github.com/e-dog/ProceduralFairings)
 
 #### v0.0.4 - 0.90.0 Patch
 * Includes [Git fingerboxes](https://github.com/fingerboxes) patch for in-game rendering glitches & other weirdness (unconfirmed bug)
