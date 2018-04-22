@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 //	Created by Nils Daumann on 19.06.2011.
 //	Copyright (c) 2011 Nils Daumann
 
@@ -58,7 +60,7 @@ Shader "Hidden/SlinDev/Desktop/PostProcessing/FXAA"
 				    //(1.0/4.0)
 				    
 				    v2f o;
-				    o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+				    o.pos = UnityObjectToClipPos (v.vertex);
 				    o.posPos.xy = v.texcoord.xy;
 				    o.posPos.zw = o.posPos.xy - (_MainTex_TexelSize.xy * (0.5 + FXAA_SUBPIX_SHIFT));
 				    return o;

@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Kronal/Color Adjust" {
 Properties {
 	_MainTex ("Base (RGB)", Rect) = "white" {}
@@ -39,7 +41,7 @@ struct uvinfo {
 uvinfo vert( appdata_img v )
 {
 	uvinfo i;
-	i.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+	i.pos = UnityObjectToClipPos (v.vertex);
 	i.uv = MultiplyUV( UNITY_MATRIX_TEXTURE0, v.texcoord );
 	return i;
 }
