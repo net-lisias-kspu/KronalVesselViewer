@@ -51,9 +51,17 @@ Developers who wish to contribute should [branch dev-master](https://github.com/
 
 ### Bigorangemachine's Fork
 
-#### v0.0.5a
-* Alpha Transparency Option
-* Non-auto refresh of preview image
+#### v0.0.4 - 0.90.0 Patch
+* Includes [Git fingerboxes](https://github.com/fingerboxes) patch for in-game rendering glitches & other weirdness (unconfirmed bug)
+* Thanks to KSP-IRC: TaranisElsu for helping me find the solution to the VAB/SPH facitilty detection
+* Thanks to [Git m4v](https://github.com/m4v) (RCS Build Assist) again for keeping their code public so I could reference the click through code
+* To Install:
+  * Replace all Existing <KSP ROOT>GameData/KronalUtils/ files (only .DLL changed but be sure replace everything)
+  * No Dependancies
+* To Build/Compile:
+  * Normal KSP Modding (Build with required KSP DLLs)
+  * Download and Build with [KAS.dll](https://github.com/KospY/KAS)
+  * Download and Build with [ProceduralFairings.dll](https://github.com/e-dog/ProceduralFairings)
 
 #### v0.0.4 - 0.90.0 Patch
 * Includes [Git fingerboxes](https://github.com/fingerboxes) patch for in-game rendering glitches & other weirdness (unconfirmed bug)

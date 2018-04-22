@@ -29,7 +29,6 @@ namespace KronalUtils
         private KVrEditorAxis axis;
         private bool IsOnEditor()
         {
-            //return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH);
             return (HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedSceneIsEditor);
         }
         
@@ -61,6 +60,7 @@ namespace KronalUtils
         {
             control = null;
         }
+
 
         private void ConfigApplied()
         {
@@ -116,9 +116,7 @@ namespace KronalUtils
                                            Screen.height - Input.mousePosition.y);
             return this.windowSize.Contains(position);
         }
-        /* Whenever we mouseover our window, we need to lock the editor so we don't pick up
-         * parts while dragging the window around */
-        void setEditorLock()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs#L296
+        void setEditorLock()//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
         {
             if (visible)
             {
@@ -153,10 +151,8 @@ namespace KronalUtils
         {
             switch (HighLogic.LoadedScene) {//https://github.com/m4v/RCSBuildAid/blob/master/Plugin/GUI/MainWindow.cs
                 case GameScenes.EDITOR:
-                //case GameScenes.SPH:
                     break;
                 default:
-                    /* don't show window during scene changes */
                     return;
             }
             if (visible) 
@@ -449,6 +445,7 @@ namespace KronalUtils
                 "KronalUtils/Textures/icon_button-24",
                 MODNAME
             );
+
 
         }
 
