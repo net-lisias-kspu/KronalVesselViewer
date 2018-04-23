@@ -22,8 +22,7 @@ namespace KronalUtils
         private string[] shaderTabsNames;
         private Rect orthoViewRect;
         private GUIStyle guiStyleButtonAlert;
-        //private KSP.UI.Screens.ApplicationLauncherButton KVrButton;
-        ToolbarControl toolbarControl;
+        ToolbarControl toolbarControl = null;
 
         private bool visible;
         private KVrEditorAxis axis;
@@ -435,17 +434,19 @@ namespace KronalUtils
         internal const string MODNAME = "Kronal Vessel Viewer";
         void OnGUIAppLauncherReady()
         {
-            toolbarControl = gameObject.AddComponent<ToolbarControl>();
-            toolbarControl.AddToAllToolbars(onAppLaunchToggleOn,
-                    onAppLaunchToggleOff,
-                KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
-                MODID,
-                "flightPlanButton",
-                "KronalUtils/Textures/icon_button-38",
-                "KronalUtils/Textures/icon_button-24",
-                MODNAME
-            );
-
+            if (toolbarControl == null)
+            {
+                toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                toolbarControl.AddToAllToolbars(onAppLaunchToggleOn,
+                        onAppLaunchToggleOff,
+                    KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
+                    MODID,
+                    "flightPlanButton",
+                    "KronalUtils/Textures/icon_button-38",
+                    "KronalUtils/Textures/icon_button-24",
+                    MODNAME
+                );
+            }
 
         }
 
@@ -468,7 +469,6 @@ namespace KronalUtils
         void OnDestroy()
         {
             log.debug("OnDestroy");
-            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             if (this.axis != null)
                 EditorLogic.DestroyObject(this.axis);
 
