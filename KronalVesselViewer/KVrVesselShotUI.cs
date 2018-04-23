@@ -434,19 +434,16 @@ namespace KronalUtils
         internal const string MODNAME = "Kronal Vessel Viewer";
         void OnGUIAppLauncherReady()
         {
-            if (toolbarControl == null)
-            {
-                toolbarControl = gameObject.AddComponent<ToolbarControl>();
-                toolbarControl.AddToAllToolbars(onAppLaunchToggleOn,
-                        onAppLaunchToggleOff,
-                    KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
-                    MODID,
-                    "flightPlanButton",
-                    "KronalUtils/Textures/icon_button-38",
-                    "KronalUtils/Textures/icon_button-24",
-                    MODNAME
-                );
-            }
+            toolbarControl = gameObject.AddComponent<ToolbarControl>();
+            toolbarControl.AddToAllToolbars(onAppLaunchToggleOn,
+                    onAppLaunchToggleOff,
+                KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
+                MODID,
+                "flightPlanButton",
+                "KronalVesselViewer/Textures/icon_button-38",
+                "KronalVesselViewer/Textures/icon_button-24",
+                MODNAME
+            );
 
         }
 

@@ -191,7 +191,7 @@ namespace KronalUtils
 
             try
             {
-                contents = System.IO.File.ReadAllText(KSPUtil.ApplicationRootPath + "GameData/KronalUtils/Resources/" + fileName + ".shader");
+                contents = System.IO.File.ReadAllText(KSPUtil.ApplicationRootPath + "GameData/KronalVesselViewer/Resources/" + fileName + ".shader");
             } catch (Exception e)
             {
                 log.error(string.Format("{0} reading file: {1}", e, fileName));
