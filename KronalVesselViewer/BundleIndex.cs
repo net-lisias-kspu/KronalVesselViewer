@@ -89,7 +89,7 @@ namespace KronalUtils
             }
 
             log.debug(string.Format("Loading shader bundle file: {0}", bundleName));
-            WWW www = new WWW("file://" + KSPUtil.ApplicationRootPath + "GameData/KronalUtils/Resources/" + bundleName);
+            WWW www = new WWW("file://" + KSPUtil.ApplicationRootPath + "GameData/KronalVesselViewer/Resources/" + bundleName);
             yield return www;
             {
                 if (www.error != null)
