@@ -26,13 +26,16 @@ Beta-3	Bug fixes
 	Distance label in UI
 
 0.0.8
-		Updated for KSP 1.3.1
+	Updated for KSP 1.3.1
+		
 0.0.9
 	Updated for KSP 1.4.1
 	Added support for the ClickthroughBlocker
 	Added support for the ToolbarController
 	Renamed release directory to KronalVesselViewer
 
+0.0.9.1
+	Updated paths of shaders and icons to reflect new directory name
 ==========================================
 
 Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
