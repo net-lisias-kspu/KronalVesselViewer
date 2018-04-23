@@ -445,8 +445,8 @@ namespace KronalUtils
                 KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH | KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB,
                 MODID,
                 "flightPlanButton",
-                "KronalUtils/Textures/icon_button-38",
-                "KronalUtils/Textures/icon_button-24",
+                "KronalVesselViewer/Textures/icon_button-38",
+                "KronalVesselViewer/Textures/icon_button-24",
                 MODNAME
             );
 
