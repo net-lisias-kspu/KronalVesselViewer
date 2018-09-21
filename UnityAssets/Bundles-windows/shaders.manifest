@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2458440813
+CRC: 3514877687
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 6ae0f9aa0a16740ed5644a2fddaf5458
+    Hash: 8025fc1832b30750ab5b1e665e39ae71
   TypeTreeHash:
     serializedVersion: 2
     Hash: ce474e4a8b2e728b767e51cbbce77a69
@@ -16,17 +16,21 @@ ClassTypes:
 Assets:
 - Assets/FXAA.shader
 - Assets/diffuse.shader
+- Assets/Alpha.shader
 - Assets/emissivespecular.shader
 - Assets/emissivebumpedspecular.shader
 - Assets/ColorAdjust.shader
-- Assets/outline.shader
 - Assets/fxaa3_9.cginc
+- Assets/LightingKSP.cginc
 - Assets/bumpedspecular.shader
 - Assets/specular.shader
+- Assets/AlphaSpecular.shader
 - Assets/fxaa3.shader
 - Assets/bumped.shader
+- Assets/AlphaAdditive.shader
 - Assets/unlit.shader
 - Assets/cutoff.shader
 - Assets/linesColorBlended.shader
+- Assets/CutoffBumped.shader
 - Assets/fallback.shader
 Dependencies: []

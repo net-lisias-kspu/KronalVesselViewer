@@ -29,7 +29,7 @@ set VERSIONFILE=%GAMEDIR%.version
 set LICENSE=LICENSE.md
 set README=README.md
 
-set RELEASEDIR=d:\Users\jbb\release
+set RELEASEDIR="C:\Users\Jimmy\Documents\Fun Stuff\KSP stuff\Other source repositories\KronalVesselViewer"
 set ZIP="c:\Program Files\7-zip\7z.exe"
 
 rem Copy files to GameData locations
