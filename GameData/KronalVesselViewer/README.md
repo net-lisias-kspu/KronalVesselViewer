@@ -36,6 +36,13 @@ Beta-3	Bug fixes
 
 0.0.9.1
 	Updated paths of shaders and icons to reflect new directory name
+
+0.0.9.2
+	Fixed another path
+
+0.0.9.3
+	Adding some more shaders to resolve logspam
+
 ==========================================
 
 Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
