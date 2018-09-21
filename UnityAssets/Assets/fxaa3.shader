@@ -43,14 +43,14 @@ Shader "Hidden/FXAA3" {
 		float2 uv = v.texcoord.xy;
 		o.uv = uv;
 
-#if SHADER_API_D3D9
+#if defined(SHADER_API_D3D9) || defined(SHADER_API_D3D11)
 		o.uv.y += _MainTex_TexelSize.y;
 #endif
 
 		o.uvAux.xy = uv + float2(-_MainTex_TexelSize.x, +_MainTex_TexelSize.y) * 0.5f;
 		o.uvAux.zw = uv + float2(+_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * 0.5f;
 
-#if SHADER_API_D3D9
+#if defined(SHADER_API_D3D9) || defined(SHADER_API_D3D11)
 		if (_MainTex_TexelSize.y < 0)
 			uv.y = 1 - uv.y;
 #endif
