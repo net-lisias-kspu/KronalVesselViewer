@@ -40,11 +40,11 @@ Beta-3	Bug fixes
 0.0.9.2
 	Fixed another path
 
+0.0.9.3
+	Adding some more shaders to resolve logspam, thanks @kerbas-ad-astra
+
 ==========================================
 
-Kerbal Space Program [as posted on Curse](http://www.curse.com/ksp-mods/kerbal/224287-kronal-vessel-viewer-kvv-exploded-ship-view)
-
-Check [this forks release page](https://github.com/bigorangemachine/ksp-kronalutils/releases) for a download alternative
 
 Developers who wish to contribute should [branch dev-master](https://github.com/bigorangemachine/ksp-kronalutils/tree/dev-master).
 
