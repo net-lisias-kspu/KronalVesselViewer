@@ -46,6 +46,8 @@ Beta-3	Bug fixes
 0.0.9.4
 	Reduce some more log spam - only updates screenshot if the window is open.
 
+0.0.9.5
+	Version bump to fix build issue (Jenkins build not good)
 ==========================================
 
 
