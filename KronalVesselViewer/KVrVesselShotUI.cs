@@ -101,7 +101,7 @@ namespace KronalUtils
 
         public void Update()
         {
-            if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f)
+            if (this.tabCurrent == 0 && (this.orthoViewRect.width * this.orthoViewRect.height) > 1f && visible)
             {
                 this.control.UpdateVesselShot((int)this.orthoViewRect.width * 2, (int)this.orthoViewRect.height * 2);
             }
