@@ -43,6 +43,9 @@ Beta-3	Bug fixes
 0.0.9.3
 	Adding some more shaders to resolve logspam, thanks @kerbas-ad-astra
 
+0.0.9.4
+	Reduce some more log spam - only updates screenshot if the window is open.
+
 ==========================================
 
 

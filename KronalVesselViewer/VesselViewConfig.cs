@@ -1,5 +1,6 @@
 ﻿
 #define KERAMZIT
+#define KAS
 
 using System;
 using System.Collections.Generic;
