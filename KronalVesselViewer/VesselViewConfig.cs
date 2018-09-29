@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using KAS;
 
+using ProceduralFairings;
 
 namespace KronalUtils
 {
@@ -291,7 +292,7 @@ namespace KronalUtils
             if (part.Modules.Contains("ProceduralFairingSide") && hasMod("ProceduralFairings"))
             {
                 var module = part.Module<Keramzit.ProceduralFairingSide>();
-
+        
                 // Preserve ship's original fairing lock state.
                 if (toggleOn && !module.shapeLock)
                 {
