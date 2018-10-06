@@ -29,7 +29,7 @@ set VERSIONFILE=%GAMEDIR%.version
 set LICENSE=LICENSE.md
 set README=README.md
 
-set H=R:\KSP_1.4.3_dev
+set H=R:\KSP_1.4.5_dev
 set RELEASEDIR=d:\Users\jbb\release
 set ZIP="c:\Program Files\7-zip\7z.exe"
 

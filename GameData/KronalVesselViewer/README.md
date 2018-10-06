@@ -48,6 +48,12 @@ Beta-3	Bug fixes
 
 0.0.9.5
 	Version bump to fix build issue (Jenkins build not good)
+
+0.0.9.6
+	Version bump to change .version to only support up to 1.4.3
+
+0.0.9.7
+	Version bump for 1.4.5, this version only works on 1.4.5
 ==========================================
 
 
