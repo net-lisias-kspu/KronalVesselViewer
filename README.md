@@ -57,6 +57,9 @@ Beta-3	Bug fixes
 
 0.0.9.8
 	Version bump for Jenkins build
+
+0.0.9.9
+	Version bump for 1.5 rebuild, using legacy KAS only (not 1.0)
 ==========================================
 
 
